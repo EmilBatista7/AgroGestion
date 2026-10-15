@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ventas - AgroGestión</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS principal -->
+    <link rel="stylesheet" href="../css/style.css">
+    
+
+</head>
+
+<body class="pagina-agro">
+
+    
+    <!-- ==========================================
+    MENÚ PRINCIPAL
+=========================================== -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-agro fixed-top">
+
+        <div class="container">
+
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="../index.html">
+
+                <i class="fa-solid fa-leaf me-2"></i>
+
+                AgroGestión
+
+            </a>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+
+                <ul class="navbar-nav ms-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">
+                            Inicio
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="productos.html">
+                            Productos
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventario.html">
+                            Inventario
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a class="nav-link active" href="ventas.html">
+                            Ventas
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="clientes.html">
+                            Clientes
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a id="menuProveedores" class="nav-link" href="proveedores.html">
+                            Proveedores
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="lotes.html">
+                            Lotes
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a id="menuCaja" class="nav-link" href="caja.html">
+                            Caja
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a id="menuReportes" class="nav-link" href="reportes.html">
+                            Reportes
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ==========================================
+     ENCABEZADO
+=========================================== -->
+
+    <header class="productos-header">
+
+        <div class="container productos-header-content">
+
+            <div>
+
+                <span class="productos-label">
+                    GESTIÓN COMERCIAL
+                </span>
+
+                <h1>
+                    Ventas
+                </h1>
+
+                <p>
+                    Registre las ventas, gestione los productos
+                    y consulte el historial de operaciones.
+                </p>
+
+            </div>
+
+
+            <div class="productos-header-icon">
+
+                <i class="fa-solid fa-cart-shopping"></i>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==========================================
+     CONTENIDO PRINCIPAL
+=========================================== -->
+
+    <main class="container py-5">
+
+
+        <!-- ==========================================
+         RESUMEN
+    =========================================== -->
+
+        <div class="row g-4 mb-5">
+
+
+            <!-- Venta -->
+
+            <div class="col-md-4">
+
+                <div class="producto-resumen">
+
+                    <div class="resumen-icon">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h6>Ventas</h6>
+
+                        <p class="mb-0">
+                            Registro de operaciones
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Productos -->
+
+            <div class="col-md-4">
+
+                <div class="producto-resumen">
+
+                    <div class="resumen-icon">
+
+                        <i class="fa-solid fa-box"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h6>Productos</h6>
+
+                        <p class="mb-0">
+                            Agregue productos a la venta
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Clientes -->
+
+            <div class="col-md-4">
+
+                <div class="producto-resumen">
+
+                    <div class="resumen-icon">
+
+                        <i class="fa-solid fa-user"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h6>Clientes</h6>
+
+                        <p class="mb-0">
+                            Cliente asociado a la venta
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==========================================
+         DATOS DE LA VENTA
+    =========================================== -->
+
+        <section class="agro-panel mb-4">
+
+
+            <div class="agro-panel-header">
+
+                <div>
+
+                    <h2>
+
+                        <i class="fa-solid fa-file-invoice me-2"></i>
+
+                        Datos de la venta
+
+                    </h2>
+
+                    <p>
+                        Seleccione el cliente y el método de pago.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="agro-panel-body">
+
+
+                <div class="row g-4">
+
+
+                    <!-- CLIENTE -->
+
+                    <div class="col-md-6">
+
+                        <label for="cliente" class="form-label">
+                            Cliente
+                        </label>
+
+                        <div class="input-icon">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            <select id="cliente" class="form-select">
+
+                                <option value="">
+                                    Seleccione un cliente
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- MÉTODO DE PAGO -->
+
+                    <div class="col-md-6">
+
+                        <label for="metodoPago" class="form-label">
+                            Método de pago
+                        </label>
+
+                        <div class="input-icon">
+
+                            <i class="fa-solid fa-credit-card"></i>
+
+                            <select id="metodoPago" class="form-select">
+
+                                <option value="">
+                                    Seleccione un método
+                                </option>
+
+                                <option value="Efectivo">
+                                    Efectivo
+                                </option>
+
+                                <option value="Transferencia">
+                                    Transferencia
+                                </option>
+
+                                <option value="Tarjeta">
+                                    Tarjeta
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+         AGREGAR PRODUCTO
+    =========================================== -->
+
+        <section class="agro-panel mb-4">
+
+
+            <div class="agro-panel-header">
+
+                <div>
+
+                    <h2>
+
+                        <i class="fa-solid fa-box me-2"></i>
+
+                        Agregar producto
+
+                    </h2>
+
+                    <p>
+                        Seleccione un producto e indique la cantidad.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="agro-panel-body">
+
+
+                <div class="row g-4">
+
+
+                    <!-- PRODUCTO -->
+
+                    <div class="col-md-6">
+
+                        <label for="producto" class="form-label">
+                            Producto
+                        </label>
+
+                        <div class="input-icon">
+
+                            <i class="fa-solid fa-box"></i>
+
+                            <select id="producto" class="form-select">
+
+                                <option value="">
+                                    Seleccione un producto
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOTE -->
+                    
+                    <div class="col-md-6">
+                    
+                        <label for="lote" class="form-label">
+                            Lote
+                        </label>
+                    
+                        <div class="input-icon">
+                    
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                    
+                            <select id="lote" class="form-select">
+                    
+                                <option value="">
+                                    Seleccione un lote
+                                </option>
+                    
+                            </select>
+                    
+                        </div>
+                    
+                    </div>
+
+
+
+                    <!-- CANTIDAD -->
+
+                    <div class="col-md-3">
+
+                        <label for="cantidad" class="form-label">
+                            Cantidad
+                        </label>
+
+                        <div class="input-icon">
+
+                            <i class="fa-solid fa-hashtag"></i>
+
+                            <input type="number" id="cantidad" class="form-control" min="1" value="1">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- BOTÓN -->
+
+                    <div class="col-md-3 d-flex align-items-end">
+
+                        <button type="button" id="botonAgregar" class="btn btn-agro w-100">
+
+                            <i class="fa-solid fa-plus me-2"></i>
+
+                            Agregar
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+         CARRITO DE LA VENTA
+    =========================================== -->
+
+        <section class="agro-panel mb-4">
+
+
+            <div class="agro-panel-header">
+
+                <div>
+
+                    <h2>
+
+                        <i class="fa-solid fa-cart-plus me-2"></i>
+
+                        Productos de la venta
+
+                    </h2>
+
+                    <p>
+                        Productos agregados a la operación actual.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="agro-panel-body">
+
+
+                <div class="table-responsive">
+
+                    <table class="table tabla-productos align-middle">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Producto</th>
+
+                                <th>Precio</th>
+
+                                <th>Cantidad</th>
+
+                                <th>Subtotal</th>
+
+                                <th>Acción</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="tablaCarrito">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+                <!-- TOTAL -->
+
+                <div class="text-end mt-4">
+
+                    <h3>
+
+                        Total:
+
+                        $<span id="total">0</span>
+
+                    </h3>
+
+                </div>
+
+
+
+                <!-- REGISTRAR VENTA -->
+
+                <div class="form-actions mt-3">
+
+                    <button type="button" id="botonRegistrarVenta" class="btn btn-agro">
+
+                        <i class="fa-solid fa-check me-2"></i>
+
+                        Registrar venta
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+         HISTORIAL
+    =========================================== -->
+
+        <section class="agro-panel">
+
+
+            <div class="agro-panel-header">
+
+                <div>
+
+                    <h2>
+
+                        <i class="fa-solid fa-clock-rotate-left me-2"></i>
+
+                        Historial de ventas
+
+                    </h2>
+
+                    <p>
+                        Consulte las ventas registradas.
+                    </p>
+
+                </div>
+
+
+                <div class="productos-header-icon small">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                </div>
+
+            </div>
+
+
+            <div class="agro-panel-body">
+
+
+                <div class="table-responsive">
+
+                    <table class="table tabla-productos align-middle">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Fecha</th>
+
+                                <th>Cliente</th>
+
+                                <th>Total</th>
+
+                                <th>Método de pago</th>
+
+                                <th>Estado</th>
+
+                                <th>Acción</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="tablaVentas">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- ==========================================
+    PIE DE PÁGINA
+=========================================== -->
+
+    <footer class="footer-agro mt-5">
+
+        <div class="container text-center">
+
+            <div class="mb-2">
+
+                <i class="fa-solid fa-leaf me-2"></i>
+
+                <strong>AgroGestión</strong>
+
+            </div>
+
+            <p class="mb-1">
+                Sistema de Gestión de Agroquímicos
+            </p>
+
+            <small>
+                SENA - Análisis y Desarrollo de Software - 2026
+            </small>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    <!-- JavaScript de ventas -->
+
+    <script src="../js/ventas.js"></script>
+    <script src="../js/sesion.js"></script>
+    <script src="../js/permisos.js"></script>
+
+</body>
+
+</html>

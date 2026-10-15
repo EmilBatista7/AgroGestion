@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AgroGestión | Sistema de Gestión</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Nuestro CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         MENÚ PRINCIPAL
+    ========================== -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-agro fixed-top">
+
+        <div class="container">
+
+            <a class="navbar-brand fw-bold" href="index.html">
+
+                <i class="fa-solid fa-leaf me-2"></i>
+
+                AgroGestión
+
+            </a>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+
+            <div class="collapse navbar-collapse" id="menu">
+
+                <ul class="navbar-nav ms-auto">
+
+
+                    <!-- INICIO -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link active" href="index.html">
+                            Inicio
+                        </a>
+
+                    </li>
+
+
+                    <!-- PRODUCTOS -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="pages/productos.html">
+                            Productos
+                        </a>
+
+                    </li>
+
+
+                    <!-- INVENTARIO -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="pages/inventario.html">
+                            Inventario
+                        </a>
+
+                    </li>
+
+
+                    <!-- VENTAS -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="pages/ventas.html">
+                            Ventas
+                        </a>
+
+                    </li>
+
+
+                    <!-- CLIENTES -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="pages/clientes.html">
+                            Clientes
+                        </a>
+
+                    </li>
+
+
+                    <!-- PROVEEDORES -->
+
+                    <li class="nav-item">
+
+                        <a id="menuProveedores" class="nav-link" href="pages/proveedores.html">
+
+                            Proveedores
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- LOTES -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="pages/lotes.html">
+                            Lotes
+                        </a>
+
+                    </li>
+
+
+                    <!-- CAJA -->
+
+                    <li class="nav-item">
+
+                        <a id="menuCaja" class="nav-link" href="pages/caja.html">
+
+                            Caja
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- REPORTES -->
+
+                    <li class="nav-item">
+
+                        <a id="menuReportes" class="nav-link" href="pages/reportes.html">
+
+                            Reportes
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- USUARIO -->
+
+                    <li class="nav-item ms-lg-3">
+
+                        <span class="nav-link">
+
+                            <i class="fa-solid fa-user me-1"></i>
+
+                            <span id="usuarioActual"></span>
+
+                        </span>
+
+                    </li>
+
+
+                    <!-- CERRAR SESIÓN -->
+
+                    <li class="nav-item">
+
+                        <a href="#" id="cerrarSesion" class="nav-link">
+
+                            <i class="fa-solid fa-right-from-bracket me-1"></i>
+
+                            Salir
+
+                        </a>
+
+                    </li>
+
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         PORTADA
+    ========================== -->
+
+    <section class="hero-agro">
+
+        <div class="hero-overlay">
+
+            <div class="container">
+
+                <div class="hero-content">
+
+                    <span class="hero-small-title">
+                        SISTEMA DE GESTIÓN
+                    </span>
+
+
+                    <h1>
+                        AgroGestión
+                    </h1>
+
+
+                    <h2>
+                        Gestión inteligente para tu negocio agroquímico
+                    </h2>
+
+
+                    <p>
+                        Controla productos, inventario, ventas, clientes
+                        y operaciones desde un solo lugar.
+                    </p>
+
+
+                    <div class="mt-4">
+
+
+                        <a href="pages/ventas.html" class="btn btn-agro btn-lg me-2">
+
+                            <i class="fa-solid fa-cart-shopping me-2"></i>
+
+                            Ir a ventas
+
+                        </a>
+
+
+                        <a href="pages/inventario.html" class="btn btn-outline-light btn-lg">
+
+                            <i class="fa-solid fa-boxes-stacked me-2"></i>
+
+                            Ver inventario
+
+                        </a>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         CONTENIDO
+    ========================== -->
+
+    <main class="container py-5">
+
+
+        <div class="section-title text-center mb-5">
+
+            <span>
+                ADMINISTRACIÓN
+            </span>
+
+
+            <h2>
+                Todo lo que necesitas en un solo lugar
+            </h2>
+
+
+            <p>
+                Accede rápidamente a las principales funciones
+                de AgroGestión.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             MÓDULOS
+        ========================== -->
+
+        <div class="row g-4">
+
+
+            <!-- VENTAS -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Ventas
+                    </h5>
+
+
+                    <p>
+                        Registra y consulta las ventas
+                        realizadas en el negocio.
+                    </p>
+
+
+                    <a href="pages/ventas.html">
+
+                        Ir a ventas
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PRODUCTOS -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-flask"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Productos
+                    </h5>
+
+
+                    <p>
+                        Administra los productos
+                        agroquímicos del negocio.
+                    </p>
+
+
+                    <a href="pages/productos.html">
+
+                        Ver productos
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INVENTARIO -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-boxes-stacked"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Inventario
+                    </h5>
+
+
+                    <p>
+                        Controla existencias y movimientos
+                        de los productos.
+                    </p>
+
+
+                    <a href="pages/inventario.html">
+
+                        Ver inventario
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CLIENTES -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-users"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Clientes
+                    </h5>
+
+
+                    <p>
+                        Registra y administra la información
+                        de tus clientes.
+                    </p>
+
+
+                    <a href="pages/clientes.html">
+
+                        Ver clientes
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PROVEEDORES -->
+
+            <div id="tarjetaProveedores" class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-truck"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Proveedores
+                    </h5>
+
+
+                    <p>
+                        Administra proveedores y procesos
+                        de abastecimiento.
+                    </p>
+
+
+                    <a href="pages/proveedores.html">
+
+                        Ver proveedores
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- LOTES -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-barcode"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Lotes
+                    </h5>
+
+
+                    <p>
+                        Controla lotes y fechas
+                        de vencimiento.
+                    </p>
+
+
+                    <a href="pages/lotes.html">
+
+                        Ver lotes
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CAJA -->
+
+            <div id="tarjetaCaja" class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-cash-register"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Caja
+                    </h5>
+
+
+                    <p>
+                        Controla ingresos, egresos
+                        y movimientos de caja.
+                    </p>
+
+
+                    <a href="pages/caja.html">
+
+                        Ver caja
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- REPORTES -->
+
+            <div id="tarjetaReportes" class="col-md-6 col-lg-3">
+
+                <div class="agro-card">
+
+                    <div class="icon-box">
+
+                        <i class="fa-solid fa-chart-column"></i>
+
+                    </div>
+
+
+                    <h5>
+                        Reportes
+                    </h5>
+
+
+                    <p>
+                        Consulta información y resultados
+                        del negocio.
+                    </p>
+
+
+                    <a href="pages/reportes.html">
+
+                        Ver reportes
+
+                        <i class="fa-solid fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         PIE DE PÁGINA
+    ========================== -->
+
+    <footer class="footer-agro">
+
+        <div class="container text-center">
+
+            <i class="fa-solid fa-leaf mb-2"></i>
+
+
+            <h5>
+                AgroGestión
+            </h5>
+
+
+            <p>
+                Sistema de Gestión de Agroquímicos
+            </p>
+
+
+            <small>
+                SENA - Análisis y Desarrollo de Software - 2026
+            </small>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- JavaScript existente -->
+
+    <script src="js/app.js"></script>
+
+
+    <!-- Sesión -->
+
+    <script src="js/sesion-index.js"></script>
+
+
+    <!-- Permisos -->
+
+    <script src="js/permisos-index.js"></script>
+
+
+</body>
+
+</html>

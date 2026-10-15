@@ -1,0 +1,1108 @@
+/* =================================
+    CONFIGURACIÓN GENERAL
+================================= */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7f3;
+    color: #263326;
+}
+
+
+/* =================================
+MENÚ
+================================= */
+
+.navbar-agro {
+    background: rgba(25, 70, 35, 0.95);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-agro .navbar-brand {
+    font-size: 1.4rem;
+}
+
+.navbar-agro .nav-link {
+    color: white;
+    margin-left: 8px;
+    transition: 0.3s;
+}
+
+.navbar-agro .nav-link:hover {
+    color: #c7e8b0;
+}
+
+
+/* =================================
+PORTADA
+================================= */
+
+.hero-agro {
+
+    min-height: 620px;
+
+    background-image:
+        linear-gradient(
+            rgba(15, 55, 25, 0.72),
+            rgba(15, 55, 25, 0.72)
+        ),
+        url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1800&q=80");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    align-items: center;
+
+    margin-top: 56px;
+}
+
+
+.hero-overlay {
+    width: 100%;
+}
+
+
+.hero-content {
+    max-width: 750px;
+    color: white;
+    padding: 80px 0;
+}
+
+
+.hero-small-title {
+
+    display: inline-block;
+
+    font-size: 0.85rem;
+
+    letter-spacing: 3px;
+
+    font-weight: bold;
+
+    margin-bottom: 15px;
+}
+
+
+.hero-content h1 {
+
+    font-size: 4.5rem;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+
+.hero-content h2 {
+
+    font-size: 2rem;
+
+    font-weight: normal;
+
+    margin-bottom: 20px;
+}
+
+
+.hero-content p {
+
+    font-size: 1.2rem;
+
+    max-width: 650px;
+
+    line-height: 1.7;
+}
+
+
+/* =================================
+BOTONES
+================================= */
+
+.btn-agro {
+
+    background: #78a83b;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 25px;
+
+    font-weight: bold;
+
+}
+
+
+.btn-agro:hover {
+
+    background: #638d30;
+
+    color: white;
+
+}
+
+
+/* =================================
+TÍTULO DE SECCIÓN
+================================= */
+
+.section-title span {
+
+    color: #6d9638;
+
+    font-size: 0.8rem;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+}
+
+
+.section-title h2 {
+
+    font-size: 2.2rem;
+
+    font-weight: bold;
+
+    margin-top: 8px;
+}
+
+
+.section-title p {
+
+    color: #687268;
+
+}
+
+
+/* =================================
+TARJETAS
+================================= */
+
+.agro-card {
+
+    background: white;
+
+    border-radius: 15px;
+
+    padding: 28px;
+
+    height: 100%;
+
+    border: 1px solid #e2e8df;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.06);
+
+    transition: all 0.3s ease;
+}
+
+
+.agro-card:hover {
+
+    transform: translateY(-7px);
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+
+.icon-box {
+
+    width: 55px;
+
+    height: 55px;
+
+    border-radius: 12px;
+
+    background: #e8f1df;
+
+    color: #4f7d2d;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 1.4rem;
+
+    margin-bottom: 20px;
+}
+
+
+.agro-card h5 {
+
+    font-size: 1.2rem;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+}
+
+
+.agro-card p {
+
+    color: #687268;
+
+    line-height: 1.6;
+
+    min-height: 75px;
+}
+
+
+.agro-card a {
+
+    text-decoration: none;
+
+    color: #4f7d2d;
+
+    font-weight: bold;
+}
+
+
+.agro-card a:hover {
+
+    color: #31551c;
+}
+
+
+/* =================================
+PIE DE PÁGINA
+================================= */
+
+.footer-agro {
+
+    background: #193d22;
+
+    color: white;
+
+    padding: 40px 0;
+
+    margin-top: 40px;
+}
+
+
+.footer-agro i {
+
+    font-size: 1.5rem;
+}
+
+
+.footer-agro h5 {
+
+    margin-top: 5px;
+
+    font-weight: bold;
+}
+
+
+.footer-agro p {
+
+    margin-bottom: 5px;
+
+    color: #d2dfd3;
+}
+
+
+.footer-agro small {
+
+    color: #aebdb0;
+}
+
+
+/* =================================
+RESPONSIVE
+================================= */
+
+@media (max-width: 768px) {
+
+    .hero-content {
+
+        padding: 60px 20px;
+
+        text-align: center;
+    }
+
+
+    .hero-content h1 {
+
+        font-size: 3rem;
+    }
+
+
+    .hero-content h2 {
+
+        font-size: 1.5rem;
+    }
+
+
+    .hero-content p {
+
+        font-size: 1rem;
+    }
+
+}
+
+
+/* =================================
+   PÁGINA PRODUCTOS
+================================= */
+
+.pagina-agro {
+    background: #f4f7f3;
+}
+
+
+/* =================================
+   ENCABEZADO PRODUCTOS
+================================= */
+
+.productos-header {
+
+    margin-top: 56px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #193d22,
+            #356331
+        );
+
+    color: white;
+
+    padding: 55px 0;
+
+}
+
+
+.productos-header-content {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.productos-label {
+
+    font-size: 0.75rem;
+
+    letter-spacing: 3px;
+
+    font-weight: bold;
+
+    color: #c5dcae;
+}
+
+
+.productos-header h1 {
+
+    font-size: 2.8rem;
+
+    font-weight: bold;
+
+    margin-top: 8px;
+
+    margin-bottom: 10px;
+
+}
+
+
+.productos-header p {
+
+    margin: 0;
+
+    color: #d9e5d8;
+
+    font-size: 1.05rem;
+
+}
+
+
+.productos-header-icon {
+
+    width: 100px;
+
+    height: 100px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.12);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 2.8rem;
+
+}
+
+
+/* =================================
+   TARJETAS DE RESUMEN
+================================= */
+
+.producto-resumen {
+
+    background: white;
+
+    border: 1px solid #e1e8de;
+
+    border-radius: 14px;
+
+    padding: 22px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    height: 100%;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.05);
+
+    transition: 0.3s;
+
+}
+
+
+.producto-resumen:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.09);
+
+}
+
+
+.resumen-icon {
+
+    min-width: 55px;
+
+    width: 55px;
+
+    height: 55px;
+
+    border-radius: 12px;
+
+    background: #e8f1df;
+
+    color: #4f7d2d;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 1.4rem;
+
+}
+
+
+.producto-resumen small {
+
+    font-size: 0.7rem;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    color: #78906c;
+
+}
+
+
+.producto-resumen h4 {
+
+    margin: 2px 0;
+
+    font-weight: bold;
+
+}
+
+
+.producto-resumen p {
+
+    margin: 0;
+
+    color: #7a8479;
+
+    font-size: 0.9rem;
+
+}
+
+
+/* =================================
+   PANELES
+================================= */
+
+.agro-panel {
+
+    background: white;
+
+    border-radius: 15px;
+
+    border: 1px solid #e1e8de;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.06);
+
+}
+
+
+.agro-panel-header {
+
+    padding: 25px 30px;
+
+    background: #fbfcfa;
+
+    border-bottom: 1px solid #e4e9e1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.agro-panel-header span {
+
+    font-size: 0.7rem;
+
+    letter-spacing: 2px;
+
+    font-weight: bold;
+
+    color: #71915d;
+
+}
+
+
+.agro-panel-header h3 {
+
+    margin: 4px 0 0;
+
+    font-size: 1.35rem;
+
+    font-weight: bold;
+
+}
+
+
+.agro-panel-body {
+
+    padding: 30px;
+
+}
+
+
+/* =================================
+   FORMULARIO
+================================= */
+
+.form-label {
+
+    font-weight: 600;
+
+    color: #354235;
+
+    margin-bottom: 8px;
+
+}
+
+
+.form-control,
+.form-select {
+
+    border: 1px solid #dce4d8;
+
+    border-radius: 9px;
+
+    padding: 11px 13px;
+
+}
+
+
+.form-control:focus,
+.form-select:focus {
+
+    border-color: #78a83b;
+
+    box-shadow:
+        0 0 0 3px rgba(120,168,59,0.12);
+
+}
+
+
+.input-icon {
+
+    position: relative;
+
+}
+
+
+.input-icon i {
+
+    position: absolute;
+
+    left: 13px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #78906c;
+
+    z-index: 2;
+
+}
+
+
+.input-icon .form-control {
+
+    padding-left: 40px;
+
+}
+
+
+.form-actions {
+
+    border-top: 1px solid #edf0eb;
+
+    padding-top: 20px;
+
+}
+
+
+.btn-agro {
+
+    background: #5d8d32;
+
+    border: none;
+
+    color: white;
+
+    padding: 11px 22px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+}
+
+
+.btn-agro:hover {
+
+    background: #4b7528;
+
+    color: white;
+
+}
+
+
+/* =================================
+   TABLA
+================================= */
+
+.tabla-productos {
+
+    margin-bottom: 0;
+
+}
+
+
+.tabla-productos thead {
+
+    background: #edf4e8;
+
+}
+
+
+.tabla-productos thead th {
+
+    color: #3d5c35;
+
+    font-size: 0.82rem;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+
+    border-bottom: 2px solid #dce8d6;
+
+}
+
+
+.tabla-productos tbody td {
+
+    padding: 15px 10px;
+
+    border-color: #edf0eb;
+
+    font-size: 0.9rem;
+
+}
+
+
+.tabla-productos tbody tr {
+
+    transition: 0.2s;
+
+}
+
+
+.tabla-productos tbody tr:hover {
+
+    background: #f7faf5;
+
+}
+
+
+/* =================================
+   BUSCADOR
+================================= */
+
+.buscador-productos {
+
+    position: relative;
+
+    width: 250px;
+
+}
+
+
+.buscador-productos i {
+
+    position: absolute;
+
+    left: 13px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #80907c;
+
+}
+
+
+.buscador-productos input {
+
+    width: 100%;
+
+    border: 1px solid #dce4d8;
+
+    border-radius: 8px;
+
+    padding: 9px 12px 9px 38px;
+
+    outline: none;
+
+}
+
+
+.buscador-productos input:focus {
+
+    border-color: #78a83b;
+
+    box-shadow:
+        0 0 0 3px rgba(120,168,59,0.10);
+
+}
+
+
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 768px) {
+
+    .productos-header-content {
+
+        text-align: center;
+
+        justify-content: center;
+
+    }
+
+
+    .productos-header-icon {
+
+        display: none;
+
+    }
+
+
+    .productos-header h1 {
+
+        font-size: 2.2rem;
+
+    }
+
+
+    .agro-panel-header {
+
+        display: block;
+
+    }
+
+
+    .buscador-productos {
+
+        width: 100%;
+
+        margin-top: 20px;
+
+    }
+
+
+    .agro-panel-body {
+
+        padding: 20px;
+
+    }
+
+}
+
+/* =================================
+   PRODUCTOS - TABLA Y ESTADOS
+================================= */
+
+.codigo-producto {
+    font-family: monospace;
+    background: #f0f4ed;
+    color: #4f713e;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+
+.nombre-producto {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.producto-mini-icon {
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #e8f1df;
+    color: #5d8d32;
+}
+
+
+.categoria-producto {
+    background: #f2f5f0;
+    color: #52664d;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 0.75rem;
+}
+
+
+.precio-producto {
+    color: #426b2a;
+}
+
+
+.stock-numero {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.stock-numero strong {
+    font-size: 1rem;
+}
+
+
+.stock-badge {
+    width: fit-content;
+
+    padding: 3px 7px;
+
+    border-radius: 20px;
+
+    font-size: 0.65rem;
+
+    font-weight: bold;
+}
+
+
+.stock-normal {
+    background: #e5f3e3;
+    color: #397239;
+}
+
+
+.stock-bajo {
+    background: #fff3cd;
+    color: #876b00;
+}
+
+
+.stock-agotado {
+    background: #f8d7da;
+    color: #9b2933;
+}
+
+
+.estado-producto {
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+
+.estado-producto i {
+    font-size: 0.45rem;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+
+.estado-activo {
+    color: #438143;
+}
+
+
+.estado-inactivo {
+    color: #888;
+}
+
+
+.acciones-producto {
+    display: flex;
+    gap: 6px;
+}
+
+
+.btn-accion {
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+
+}
+
+
+.btn-editar {
+
+    background: #edf2e9;
+
+    color: #527b39;
+
+}
+
+
+.btn-editar:hover {
+
+    background: #dbe8d3;
+
+}
+
+
+.btn-eliminar {
+
+    background: #f9e6e7;
+
+    color: #a33b42;
+
+}
+
+
+.btn-eliminar:hover {
+
+    background: #f3d1d3;
+
+}
+
+
+/* =================================
+   TABLA VACÍA
+================================= */
+
+.producto-vacio {
+
+    padding: 30px;
+
+    color: #7a8479;
+
+}
+
+
+.producto-vacio i {
+
+    font-size: 3rem;
+
+    color: #a4b39d;
+
+    margin-bottom: 15px;
+
+}
+
+
+.producto-vacio h5 {
+
+    color: #4a5847;
+
+}
+
+
+.producto-vacio p {
+
+    margin: 0;
+
+}
+
+
+/* =================================
+   MEJORAS EN CELULAR
+================================= */
+
+@media (max-width: 768px) {
+
+    .tabla-productos {
+
+        min-width: 950px;
+
+    }
+
+}

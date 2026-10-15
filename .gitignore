@@ -1,0 +1,17 @@
+﻿# Archivos temporales
+*.log
+.DS_Store
+Thumbs.db
+
+# Entorno de Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Variables privadas
+.env
+.env.*
+
+# Dependencias locales
+node_modules/
