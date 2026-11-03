@@ -1,41 +1,104 @@
 // ==========================================
-// OBTENER INFORMACIÓN DE LOCALSTORAGE
+// DIRECCIONES DE LA API
 // ==========================================
 
-let productos = JSON.parse(localStorage.getItem("productos")) || [];
-
-let lotes = JSON.parse(localStorage.getItem("lotes")) || [];
+const API_PRODUCTOS = "http://127.0.0.1:5001/api/productos";
+const API_LOTES = "http://127.0.0.1:5001/api/lotes";
 
 // ==========================================
 // ELEMENTOS HTML
 // ==========================================
 
 const formulario = document.getElementById("formLote");
-
 const selectorProducto = document.getElementById("producto");
-
 const tablaLotes = document.getElementById("tablaLotes");
 
 // ==========================================
-// CARGAR PRODUCTOS
+// ALMACENAR INFORMACIÓN
 // ==========================================
 
-function cargarProductos() {
-  selectorProducto.innerHTML = `
-        <option value="">
-            Seleccione un producto
-        </option>
-    `;
+let productos = [];
+let lotes = [];
 
-  productos.forEach(function (producto, indice) {
-    const opcion = document.createElement("option");
+// ==========================================
+// ESCAPAR TEXTO HTML
+// ==========================================
 
-    opcion.value = indice;
+function escaparHTML(texto) {
+  return String(texto ?? "").replace(/[&<>"']/g, function (caracter) {
+    const caracteres = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
 
-    opcion.textContent = producto.codigo + " - " + producto.nombre;
-
-    selectorProducto.appendChild(opcion);
+    return caracteres[caracter];
   });
+}
+
+// ==========================================
+// CARGAR PRODUCTOS DESDE MYSQL
+// ==========================================
+
+async function cargarProductos() {
+  try {
+    const respuesta = await fetch(API_PRODUCTOS);
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudieron consultar los productos.");
+    }
+
+    productos = await respuesta.json();
+
+    selectorProducto.innerHTML = `
+            <option value="">Seleccione un producto</option>
+        `;
+
+    productos.forEach(function (producto) {
+      const opcion = document.createElement("option");
+
+      // El código identifica el producto en MySQL
+      opcion.value = producto.codigo;
+
+      opcion.textContent = producto.codigo + " - " + producto.nombre;
+
+      selectorProducto.appendChild(opcion);
+    });
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+
+    alert("No fue posible cargar los productos.");
+  }
+}
+
+// ==========================================
+// CARGAR LOTES DESDE MYSQL
+// ==========================================
+
+async function cargarLotes() {
+  try {
+    const respuesta = await fetch(API_LOTES);
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudieron consultar los lotes.");
+    }
+
+    lotes = await respuesta.json();
+
+    mostrarLotes();
+  } catch (error) {
+    console.error("Error al cargar lotes:", error);
+
+    tablaLotes.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center py-4">
+                    No fue posible cargar los lotes.
+                </td>
+            </tr>
+        `;
+  }
 }
 
 // ==========================================
@@ -53,8 +116,6 @@ function calcularAlerta(fechaVencimiento) {
 
   const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
 
-  // VENCIDO
-
   if (dias < 0) {
     return {
       texto: "Vencido",
@@ -62,8 +123,6 @@ function calcularAlerta(fechaVencimiento) {
       icono: "fa-circle-xmark",
     };
   }
-
-  // MENOS DE 30 DÍAS
 
   if (dias <= 30) {
     return {
@@ -73,8 +132,6 @@ function calcularAlerta(fechaVencimiento) {
     };
   }
 
-  // MENOS DE 60 DÍAS
-
   if (dias <= 60) {
     return {
       texto: "Vence en menos de 60 días",
@@ -83,8 +140,6 @@ function calcularAlerta(fechaVencimiento) {
     };
   }
 
-  // MENOS DE 90 DÍAS
-
   if (dias <= 90) {
     return {
       texto: "Vence en menos de 90 días",
@@ -92,8 +147,6 @@ function calcularAlerta(fechaVencimiento) {
       icono: "fa-calendar-days",
     };
   }
-
-  // VIGENTE
 
   return {
     texto: "Vigente",
@@ -111,7 +164,7 @@ function formatearFecha(fecha) {
     return "N/A";
   }
 
-  const partes = fecha.split("-");
+  const partes = String(fecha).split("-");
 
   if (partes.length !== 3) {
     return fecha;
@@ -127,187 +180,102 @@ function formatearFecha(fecha) {
 function mostrarLotes() {
   tablaLotes.innerHTML = "";
 
-  // ==========================================
-  // NO HAY LOTES
-  // ==========================================
-
   if (lotes.length === 0) {
     tablaLotes.innerHTML = `
             <tr>
-
-                <td
-                    colspan="9"
-                    class="text-center py-4"
-                >
-
+                <td colspan="9" class="text-center py-4">
                     <i class="fa-solid fa-box-open me-2"></i>
-
                     No hay lotes registrados.
-
                 </td>
-
             </tr>
         `;
 
     return;
   }
 
-  // ==========================================
-  // RECORRER LOTES
-  // ==========================================
-
-  lotes.forEach(function (lote, indice) {
-    // Calcular alerta
-
+  lotes.forEach(function (lote) {
     const alerta = calcularAlerta(lote.fechaVencimiento);
-
-    // ==========================================
-    // ESTADO DEL LOTE
-    // ==========================================
 
     let estadoTexto = lote.estado || "Disponible";
 
-    // Si el lote no tiene unidades
-if (Number(lote.cantidad) <= 0) {
-  estadoTexto = "Agotado";
-}
+    if (Number(lote.cantidad) <= 0) {
+      estadoTexto = "Agotado";
+    }
 
     let estadoClase = "stock-normal";
-
     let estadoIcono = "fa-circle-check";
-
-    // Si está vencido
 
     if (alerta.texto === "Vencido") {
       estadoTexto = "No Disponible";
-
       estadoClase = "stock-agotado";
-
       estadoIcono = "fa-circle-xmark";
-    }
-
-    // Si está bloqueado
-    else if (estadoTexto === "Bloqueado") {
+    } else if (estadoTexto === "Bloqueado") {
       estadoClase = "stock-bajo";
-
       estadoIcono = "fa-lock";
-    }
-
-    // Si está agotado
-    else if (estadoTexto === "Agotado") {
+    } else if (estadoTexto === "Agotado") {
       estadoClase = "stock-agotado";
-
       estadoIcono = "fa-circle-xmark";
     }
-
-    // ==========================================
-    // CREAR FILA
-    // ==========================================
 
     const fila = document.createElement("tr");
 
     fila.innerHTML = `
-
             <td>
-
                 <span class="codigo-producto">
-
-                    ${lote.productoCodigo || "N/A"}
-
+                    ${escaparHTML(lote.productoCodigo || "N/A")}
                 </span>
-
             </td>
 
-
             <td>
-
                 <span class="nombre-producto">
-
                     <i class="fa-solid fa-box producto-mini-icon"></i>
-
-                    ${lote.producto || "N/A"}
-
+                    ${escaparHTML(lote.producto || "N/A")}
                 </span>
-
             </td>
 
-
             <td>
-
                 <strong>
-
-                    ${lote.numeroLote}
-
+                    ${escaparHTML(lote.numeroLote)}
                 </strong>
-
             </td>
 
-
             <td>
-
                 ${formatearFecha(lote.fechaFabricacion)}
-
             </td>
 
-
             <td>
-
                 ${formatearFecha(lote.fechaVencimiento)}
-
             </td>
 
-
             <td>
-
                 <strong class="stock-numero">
-
                     ${Number(lote.cantidad) || 0}
-
                 </strong>
-
             </td>
 
-
             <td>
-
                 <span class="stock-badge ${estadoClase}">
-
                     <i class="fa-solid ${estadoIcono}"></i>
-
                     ${estadoTexto}
-
                 </span>
-
             </td>
 
-
             <td>
-
                 <span class="stock-badge ${alerta.clase}">
-
                     <i class="fa-solid ${alerta.icono}"></i>
-
                     ${alerta.texto}
-
                 </span>
-
             </td>
 
-
             <td>
-
                 <button
                     class="btn btn-accion btn-eliminar"
-                    onclick="eliminarLote(${indice})"
+                    onclick="eliminarLote(${Number(lote.id)})"
                     title="Eliminar lote"
                 >
-
                     <i class="fa-solid fa-trash"></i>
-
                 </button>
-
             </td>
-
         `;
 
     tablaLotes.appendChild(fila);
@@ -315,17 +283,13 @@ if (Number(lote.cantidad) <= 0) {
 }
 
 // ==========================================
-// REGISTRAR LOTE
+// REGISTRAR LOTE EN MYSQL
 // ==========================================
 
-formulario.addEventListener("submit", function (event) {
+formulario.addEventListener("submit", async function (event) {
   event.preventDefault();
 
-  // ==========================================
-  // OBTENER DATOS
-  // ==========================================
-
-  const indiceProducto = selectorProducto.value;
+  const productoCodigo = selectorProducto.value;
 
   const numeroLote = document.getElementById("numeroLote").value.trim();
 
@@ -337,43 +301,31 @@ formulario.addEventListener("submit", function (event) {
 
   const estado = document.getElementById("estado").value;
 
-  // ==========================================
   // VALIDAR PRODUCTO
-  // ==========================================
 
-  if (indiceProducto === "") {
+  if (productoCodigo === "") {
     alert("Seleccione un producto.");
-
     return;
   }
 
-  // ==========================================
   // VALIDAR NÚMERO DE LOTE
-  // ==========================================
 
   if (numeroLote === "") {
     alert("Ingrese el número de lote.");
-
     return;
   }
 
-  // ==========================================
   // VALIDAR CANTIDAD
-  // ==========================================
 
-  if (cantidad <= 0 || isNaN(cantidad)) {
-    alert("La cantidad debe ser mayor que cero.");
-
+  if (!Number.isInteger(cantidad) || cantidad <= 0) {
+    alert("La cantidad debe ser un número entero mayor que cero.");
     return;
   }
 
-  // ==========================================
   // VALIDAR FECHAS
-  // ==========================================
 
   if (fechaFabricacion === "" || fechaVencimiento === "") {
     alert("Ingrese las fechas de fabricación y vencimiento.");
-
     return;
   }
 
@@ -381,13 +333,10 @@ formulario.addEventListener("submit", function (event) {
     alert(
       "La fecha de vencimiento debe ser posterior a la fecha de fabricación.",
     );
-
     return;
   }
 
-  // ==========================================
   // VALIDAR LOTE REPETIDO
-  // ==========================================
 
   const loteRepetido = lotes.some(function (lote) {
     return String(lote.numeroLote).toLowerCase() === numeroLote.toLowerCase();
@@ -395,87 +344,86 @@ formulario.addEventListener("submit", function (event) {
 
   if (loteRepetido) {
     alert("Ya existe un lote con ese número.");
-
     return;
   }
 
-  // ==========================================
-  // OBTENER PRODUCTO
-  // ==========================================
-
-  const producto = productos[indiceProducto];
-
-  // ==========================================
-  // CREAR NUEVO LOTE
-  // ==========================================
+  // PREPARAR INFORMACIÓN
 
   const nuevoLote = {
-    productoCodigo: producto.codigo,
-
-    producto: producto.nombre,
-
+    productoCodigo: productoCodigo,
     numeroLote: numeroLote,
-
     fechaFabricacion: fechaFabricacion,
-
     fechaVencimiento: fechaVencimiento,
-
     cantidad: cantidad,
-
     estado: estado,
   };
 
-  // ==========================================
-  // GUARDAR LOTE
-  // ==========================================
+  try {
+    const respuesta = await fetch(API_LOTES, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(nuevoLote),
+    });
 
-  lotes.push(nuevoLote);
+    const resultado = await respuesta.json();
 
-  localStorage.setItem("lotes", JSON.stringify(lotes));
+    if (!respuesta.ok) {
+      throw new Error(resultado.error || "No se pudo registrar el lote.");
+    }
 
-  // ==========================================
-  // LIMPIAR FORMULARIO
-  // ==========================================
+    formulario.reset();
 
-  formulario.reset();
+    await cargarLotes();
 
-  // ==========================================
-  // ACTUALIZAR TABLA
-  // ==========================================
+    alert("Lote registrado correctamente.");
+  } catch (error) {
+    console.error("Error al registrar lote:", error);
 
-  mostrarLotes();
-
-  // ==========================================
-  // MENSAJE
-  // ==========================================
-
-  alert("Lote registrado correctamente.");
+    alert(error.message);
+  }
 });
 
 // ==========================================
-// ELIMINAR LOTE
+// ELIMINAR LOTE DE MYSQL
 // ==========================================
 
-function eliminarLote(indice) {
+async function eliminarLote(id) {
   const confirmar = confirm("¿Está seguro de eliminar este lote?");
 
   if (!confirmar) {
     return;
   }
 
-  lotes.splice(indice, 1);
+  try {
+    const respuesta = await fetch(`${API_LOTES}/${id}`, {
+      method: "DELETE",
+    });
 
-  localStorage.setItem("lotes", JSON.stringify(lotes));
+    const resultado = await respuesta.json();
 
-  mostrarLotes();
+    if (!respuesta.ok) {
+      throw new Error(resultado.error || "No se pudo eliminar el lote.");
+    }
 
-  alert("Lote eliminado correctamente.");
+    await cargarLotes();
+
+    alert("Lote eliminado correctamente.");
+  } catch (error) {
+    console.error("Error al eliminar lote:", error);
+
+    alert(error.message);
+  }
 }
 
 // ==========================================
 // INICIAR PÁGINA
 // ==========================================
 
-cargarProductos();
+async function iniciarPagina() {
+  await cargarProductos();
+  await cargarLotes();
+}
 
-mostrarLotes();
+iniciarPagina();

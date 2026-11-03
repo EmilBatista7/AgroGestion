@@ -1,11 +1,13 @@
 // ==========================================
 // PRODUCTOS - AGROGESTIÓN
+// Conexión con MySQL mediante Flask
 // ==========================================
 
-// Obtener productos guardados en LocalStorage
-let productos = JSON.parse(localStorage.getItem("productos")) || [];
+const API_URL = "http://127.0.0.1:5001/api/productos";
 
-let lotes = JSON.parse(localStorage.getItem("lotes")) || [];
+// Productos consultados desde MySQL
+let productos = [];
+
 // Formulario
 const formulario = document.getElementById("formProducto");
 
@@ -15,38 +17,36 @@ const tabla = document.getElementById("tablaProductos");
 // Buscador
 const buscador = document.getElementById("buscarProducto");
 
-// Índice del producto que se está editando
-let indiceEditando = -1;
+// ID del producto que se está editando
+let idEditando = null;
 
 // ==========================================
-// SINCRONIZAR STOCK CON LOS LOTES
+// CONSULTAR PRODUCTOS DESDE MYSQL
 // ==========================================
 
-function sincronizarStockConLotes() {
-  productos.forEach(function (producto) {
-    const lotesProducto = lotes.filter(function (lote) {
-      return (
-        String(lote.productoCodigo).trim() === String(producto.codigo).trim()
-      );
-    });
+async function cargarProductos() {
+  try {
+    const respuesta = await fetch(API_URL);
 
-    // Si el producto tiene lotes,
-    // el stock será la suma de sus cantidades
-
-    if (lotesProducto.length > 0) {
-      let stockTotal = 0;
-
-      lotesProducto.forEach(function (lote) {
-        stockTotal += Number(lote.cantidad) || 0;
-      });
-
-      producto.stock = stockTotal;
+    if (!respuesta.ok) {
+      throw new Error("No se pudieron consultar los productos");
     }
-  });
 
-  // Guardar el stock actualizado
+    productos = await respuesta.json();
 
-  localStorage.setItem("productos", JSON.stringify(productos));
+    mostrarProductos();
+  } catch (error) {
+    console.error("Error al consultar productos:", error);
+
+    tabla.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center py-4">
+                    No fue posible cargar los productos.
+                    Comprueba que Flask esté funcionando.
+                </td>
+            </tr>
+        `;
+  }
 }
 
 // ==========================================
@@ -56,25 +56,18 @@ function sincronizarStockConLotes() {
 function mostrarProductos(lista = productos) {
   tabla.innerHTML = "";
 
-  // Si no hay productos
   if (lista.length === 0) {
     tabla.innerHTML = `
             <tr>
                 <td colspan="9" class="text-center py-5">
-
                     <div class="producto-vacio">
-
                         <i class="fa-solid fa-box-open"></i>
-
                         <h5>No hay productos registrados</h5>
-
                         <p>
                             Registra tu primer producto
                             utilizando el formulario.
                         </p>
-
                     </div>
-
                 </td>
             </tr>
         `;
@@ -82,53 +75,39 @@ function mostrarProductos(lista = productos) {
     return;
   }
 
-  // Recorrer productos
   lista.forEach(function (producto) {
-    // Buscar índice real del producto
-    const indice = productos.indexOf(producto);
-
     const fila = document.createElement("tr");
-
-    // ==================================
-    // ESTADO DEL STOCK
-    // ==================================
-
-    // ==================================
-    // ESTADO DEL STOCK
-    // ==================================
 
     const stockActual = Number(producto.stock) || 0;
     const stockMinimo = Number(producto.stockMinimo) || 0;
 
+    // Estado del stock
     let estadoStock = "";
 
     if (stockActual === 0) {
       estadoStock = `
-        <span class="stock-badge stock-agotado">
-            <i class="fa-solid fa-circle-xmark"></i>
-            Agotado
-        </span>
-    `;
+                <span class="stock-badge stock-agotado">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    Agotado
+                </span>
+            `;
     } else if (stockActual <= stockMinimo) {
       estadoStock = `
-        <span class="stock-badge stock-bajo">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            Stock bajo
-        </span>
-    `;
+                <span class="stock-badge stock-bajo">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Stock bajo
+                </span>
+            `;
     } else {
       estadoStock = `
-        <span class="stock-badge stock-normal">
-            <i class="fa-solid fa-circle-check"></i>
-            Disponible
-        </span>
-    `;
+                <span class="stock-badge stock-normal">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Disponible
+                </span>
+            `;
     }
 
-    // ==================================
-    // ESTADO DEL PRODUCTO
-    // ==================================
-
+    // Estado del producto
     let estadoProducto = "";
 
     if (producto.estado === "Activo") {
@@ -147,109 +126,68 @@ function mostrarProductos(lista = productos) {
             `;
     }
 
-    // ==================================
-    // FILA
-    // ==================================
-
+    // Crear fila
     fila.innerHTML = `
-
             <td>
                 <span class="codigo-producto">
                     ${producto.codigo}
                 </span>
             </td>
 
-
             <td>
-
                 <div class="nombre-producto">
-
                     <div class="producto-mini-icon">
                         <i class="fa-solid fa-flask"></i>
                     </div>
 
-                    <strong>
-                        ${producto.nombre}
-                    </strong>
-
+                    <strong>${producto.nombre}</strong>
                 </div>
-
             </td>
-
 
             <td>
                 <span class="categoria-producto">
-                    ${producto.categoria}
+                    ${producto.categoria || ""}
                 </span>
             </td>
 
+            <td>${producto.marca || ""}</td>
 
             <td>
-                ${producto.marca}
-            </td>
-
-
-            <td>
-
                 <strong class="precio-producto">
                     $${Number(producto.precio).toLocaleString("es-CO")}
                 </strong>
-
             </td>
 
-
             <td>
-
                 <div class="stock-numero">
-
-                    <strong>
-                        ${producto.stock}
-                    </strong>
-
+                    <strong>${stockActual}</strong>
                     ${estadoStock}
-
                 </div>
-
             </td>
 
+            <td>${stockMinimo}</td>
+
+            <td>${estadoProducto}</td>
 
             <td>
-                ${producto.stockMinimo}
-            </td>
-
-
-            <td>
-                ${estadoProducto}
-            </td>
-
-
-            <td>
-
                 <div class="acciones-producto">
-
                     <button
                         class="btn-accion btn-editar"
-                        onclick="editarProducto(${indice})"
+                        onclick="editarProducto(${producto.id})"
                         title="Editar producto">
 
                         <i class="fa-solid fa-pen"></i>
-
                     </button>
-
 
                     <button
                         class="btn-accion btn-eliminar"
-                        onclick="eliminarProducto(${indice})"
+                        onclick="eliminarProducto(${producto.id})"
                         title="Eliminar producto">
 
                         <i class="fa-solid fa-trash"></i>
-
                     </button>
-
                 </div>
-
             </td>
-
         `;
 
     tabla.appendChild(fila);
@@ -257,118 +195,114 @@ function mostrarProductos(lista = productos) {
 }
 
 // ==========================================
-// GUARDAR PRODUCTO
+// GUARDAR Y ACTUALIZAR PRODUCTOS
 // ==========================================
 
-formulario.addEventListener("submit", function (event) {
+formulario.addEventListener("submit", async function (event) {
   event.preventDefault();
 
-  // Obtener información
-  const codigo = document.getElementById("codigo").value.trim();
-
-  const nombre = document.getElementById("nombre").value.trim();
-
-  const categoria = document.getElementById("categoria").value;
-
-  const marca = document.getElementById("marca").value.trim();
-
-  const precio = Number(document.getElementById("precio").value);
-
-  const stock = Number(document.getElementById("stock").value);
-
-  const stockMinimo = Number(document.getElementById("stockMinimo").value);
-
-  const estado = document.getElementById("estado").value;
-
-  // ==================================
-  // VALIDACIONES
-  // ==================================
-
-  if (precio < 0) {
-    alert("El precio no puede ser negativo.");
-
-    return;
-  }
-
-  if (stock < 0 || stockMinimo < 0) {
-    alert("El stock no puede ser negativo.");
-
-    return;
-  }
-
-  // Código repetido
-  const codigoRepetido = productos.some(function (producto, indice) {
-    return (
-      producto.codigo.toLowerCase() === codigo.toLowerCase() &&
-      indice !== indiceEditando
-    );
-  });
-
-  if (codigoRepetido) {
-    alert("Ya existe un producto con ese código.");
-
-    return;
-  }
-
-  // ==================================
-  // CREAR PRODUCTO
-  // ==================================
-
   const producto = {
-    codigo: codigo,
+    codigo: document.getElementById("codigo").value.trim(),
 
-    nombre: nombre,
+    nombre: document.getElementById("nombre").value.trim(),
 
-    categoria: categoria,
+    categoria: document.getElementById("categoria").value,
 
-    marca: marca,
+    marca: document.getElementById("marca").value.trim(),
 
-    precio: precio,
+    precio: Number(document.getElementById("precio").value),
 
-    stock: stock,
+    stock: Number(document.getElementById("stock").value),
 
-    stockMinimo: stockMinimo,
+    stockMinimo: Number(document.getElementById("stockMinimo").value),
 
-    estado: estado,
+    estado: document.getElementById("estado").value,
   };
 
-  // ==================================
-  // EDITAR
-  // ==================================
-
-  if (indiceEditando !== -1) {
-    productos[indiceEditando] = producto;
-
-    alert("Producto actualizado correctamente.");
-
-    indiceEditando = -1;
+  // Validaciones
+  if (!producto.codigo || !producto.nombre) {
+    alert("El código y el nombre son obligatorios.");
+    return;
   }
 
-  // ==================================
-  // NUEVO PRODUCTO
-  // ==================================
-  else {
-    productos.push(producto);
-
-    alert("Producto registrado correctamente.");
+  if (producto.precio < 0) {
+    alert("El precio no puede ser negativo.");
+    return;
   }
 
-  // Guardar
-  localStorage.setItem("productos", JSON.stringify(productos));
+  if (producto.stock < 0 || producto.stockMinimo < 0) {
+    alert("El stock no puede ser negativo.");
+    return;
+  }
 
-  // Limpiar formulario
-  formulario.reset();
+  try {
+    let respuesta;
 
-  // Mostrar tabla
-  mostrarProductos();
+    // Actualizar producto
+    if (idEditando !== null) {
+      respuesta = await fetch(`${API_URL}/${idEditando}`, {
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(producto),
+      });
+    }
+
+    // Registrar producto nuevo
+    else {
+      respuesta = await fetch(API_URL, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(producto),
+      });
+    }
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(resultado.error || "No se pudo guardar el producto.");
+    }
+
+    if (idEditando !== null) {
+      alert("Producto actualizado correctamente.");
+    } else {
+      alert("Producto registrado correctamente.");
+    }
+
+    // Restablecer formulario
+    formulario.reset();
+
+    idEditando = null;
+
+    // Volver a consultar MySQL
+    await cargarProductos();
+  } catch (error) {
+    console.error("Error al guardar:", error);
+
+    alert(error.message);
+  }
 });
 
 // ==========================================
 // EDITAR PRODUCTO
 // ==========================================
 
-function editarProducto(indice) {
-  const producto = productos[indice];
+function editarProducto(id) {
+  const producto = productos.find(function (elemento) {
+    return elemento.id === id;
+  });
+
+  if (!producto) {
+    alert("No se encontró el producto.");
+    return;
+  }
 
   document.getElementById("codigo").value = producto.codigo;
 
@@ -376,7 +310,7 @@ function editarProducto(indice) {
 
   document.getElementById("categoria").value = producto.categoria;
 
-  document.getElementById("marca").value = producto.marca;
+  document.getElementById("marca").value = producto.marca || "";
 
   document.getElementById("precio").value = producto.precio;
 
@@ -386,13 +320,12 @@ function editarProducto(indice) {
 
   document.getElementById("estado").value = producto.estado;
 
-  // Guardar índice
-  indiceEditando = indice;
+  // Guardar ID para actualizar
+  idEditando = producto.id;
 
   // Subir al formulario
   window.scrollTo({
     top: 0,
-
     behavior: "smooth",
   });
 }
@@ -401,17 +334,31 @@ function editarProducto(indice) {
 // ELIMINAR PRODUCTO
 // ==========================================
 
-function eliminarProducto(indice) {
+async function eliminarProducto(id) {
   const confirmar = confirm("¿Está seguro de eliminar este producto?");
 
-  if (confirmar) {
-    productos.splice(indice, 1);
+  if (!confirmar) {
+    return;
+  }
 
-    localStorage.setItem("productos", JSON.stringify(productos));
+  try {
+    const respuesta = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
 
-    mostrarProductos();
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(resultado.error || "No se pudo eliminar el producto.");
+    }
 
     alert("Producto eliminado correctamente.");
+
+    await cargarProductos();
+  } catch (error) {
+    console.error("Error al eliminar:", error);
+
+    alert(error.message);
   }
 }
 
@@ -425,10 +372,14 @@ if (buscador) {
 
     const productosFiltrados = productos.filter(function (producto) {
       return (
-        producto.codigo.toLowerCase().includes(texto) ||
-        producto.nombre.toLowerCase().includes(texto) ||
-        producto.categoria.toLowerCase().includes(texto) ||
-        producto.marca.toLowerCase().includes(texto)
+        String(producto.codigo).toLowerCase().includes(texto) ||
+        String(producto.nombre).toLowerCase().includes(texto) ||
+        String(producto.categoria || "")
+          .toLowerCase()
+          .includes(texto) ||
+        String(producto.marca || "")
+          .toLowerCase()
+          .includes(texto)
       );
     });
 
@@ -437,9 +388,7 @@ if (buscador) {
 }
 
 // ==========================================
-// MOSTRAR AL CARGAR
+// CARGAR AL ABRIR LA PÁGINA
 // ==========================================
 
-sincronizarStockConLotes();
-
-mostrarProductos();
+cargarProductos();

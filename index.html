@@ -2,661 +2,684 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AgroGestión | Sistema de Gestión</title>
+    <title>AgroGestión | Panel principal</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <!-- Nuestro CSS -->
     <link rel="stylesheet" href="css/style.css">
 
-</head>
+    <style>
+        :root {
+            --agro-dark: #173d2b;
+            --agro-green: #287448;
+            --agro-light: #eaf3eb;
+            --agro-text: #26372c;
+            --agro-muted: #738078;
+            --agro-border: #e5ebe5;
+            --agro-bg: #f6f8f5;
+        }
 
+        body {
+            background: var(--agro-bg);
+            color: var(--agro-text);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        /* Navegación */
+
+        .navbar-agro {
+            background: var(--agro-dark) !important;
+            padding: 13px 0;
+            box-shadow: 0 4px 20px rgba(15, 40, 25, 0.15);
+        }
+
+        .navbar-agro .navbar-brand {
+            font-size: 22px;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-agro .navbar-brand i {
+            color: #b7d9ae;
+        }
+
+        .navbar-agro .nav-link {
+            color: #dbe8de;
+            font-size: 13px;
+            padding: 9px 10px !important;
+            border-radius: 7px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .navbar-agro .nav-link:hover,
+        .navbar-agro .nav-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        .navbar-agro .nav-link#usuarioActual {
+            color: white;
+        }
+
+        #usuarioActual {
+            font-weight: 600;
+        }
+
+        #cerrarSesion {
+            color: #f1d7d2;
+        }
+
+        #cerrarSesion:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        /* Portada */
+
+        .hero-agro {
+            margin-top: 66px;
+            min-height: 400px;
+            background:
+                radial-gradient(ellipse at 90% 20%,
+                    rgba(119, 169, 103, 0.30),
+                    transparent 38%),
+                linear-gradient(115deg, #143b29 0%, #235d3b 60%, #38754a 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-agro::after {
+            content: "\f06c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 7%;
+            bottom: -100px;
+            font-size: 380px;
+            color: rgba(255, 255, 255, 0.045);
+            transform: rotate(-24deg);
+            pointer-events: none;
+        }
+
+        .hero-overlay {
+            width: 100%;
+            padding: 70px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 680px;
+            color: white;
+        }
+
+        .hero-small-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: #d1e8cd;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .hero-small-title::before {
+            content: "";
+            width: 25px;
+            height: 2px;
+            background: #b7d9ae;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(40px, 6vw, 62px);
+            font-weight: 750;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 15px;
+        }
+
+        .hero-content h2 {
+            max-width: 600px;
+            font-size: clamp(19px, 2.5vw, 25px);
+            font-weight: 500;
+            line-height: 1.5;
+            color: #e0ece2;
+            margin-bottom: 15px;
+        }
+
+        .hero-content p {
+            max-width: 560px;
+            color: #d0dfd3;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .btn-agro {
+            background: #d9ebd4;
+            border: 1px solid #d9ebd4;
+            color: #173d2b;
+            font-size: 14px;
+            font-weight: 650;
+            padding: 13px 20px;
+            border-radius: 9px;
+        }
+
+        .btn-agro:hover {
+            background: white;
+            border-color: white;
+            color: #173d2b;
+            transform: translateY(-1px);
+        }
+
+        .hero-content .btn-outline-light {
+            font-size: 14px;
+            padding: 13px 20px;
+            border-radius: 9px;
+        }
+
+        /* Contenido y títulos */
+
+        .contenido-agro {
+            padding-top: 65px;
+            padding-bottom: 75px;
+        }
+
+        .section-title {
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-title>span {
+            display: inline-block;
+            color: var(--agro-green);
+            background: var(--agro-light);
+            padding: 7px 12px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 750;
+            letter-spacing: 1.6px;
+            margin-bottom: 15px;
+        }
+
+        .section-title h2 {
+            color: var(--agro-dark);
+            font-size: clamp(25px, 3vw, 34px);
+            font-weight: 700;
+            letter-spacing: -0.8px;
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            color: var(--agro-muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .modulos-label {
+            color: #78867b;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+            margin-bottom: 18px;
+        }
+
+        /* Tarjetas */
+
+        .agro-card {
+            background: white;
+            border: 1px solid var(--agro-border);
+            border-radius: 15px;
+            padding: 25px 22px;
+            min-height: 235px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-shadow: 0 3px 12px rgba(28, 55, 35, 0.025);
+            transition: transform 0.22s ease,
+                box-shadow 0.22s ease,
+                border-color 0.22s ease;
+        }
+
+        .agro-card:hover {
+            transform: translateY(-5px);
+            border-color: #c7ddca;
+            box-shadow: 0 14px 30px rgba(28, 55, 35, 0.09);
+        }
+
+        .agro-card .icon-box {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--agro-light);
+            color: var(--agro-green);
+            border-radius: 12px;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .agro-card h5 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--agro-dark);
+            margin-bottom: 10px;
+        }
+
+        .agro-card p {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--agro-muted);
+            margin-bottom: 20px;
+        }
+
+        .agro-card a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: auto;
+            color: var(--agro-green);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .agro-card a i {
+            transition: transform 0.2s;
+        }
+
+        .agro-card a:hover {
+            color: var(--agro-dark);
+        }
+
+        .agro-card a:hover i {
+            transform: translateX(4px);
+        }
+
+        /* Pie de página */
+
+        .footer-agro {
+            background: #123323;
+            color: #d7e4d9;
+            padding: 36px 0 28px;
+            margin-top: 0;
+        }
+
+        .footer-agro>.container>i {
+            font-size: 23px;
+            color: #b7d9ae;
+        }
+
+        .footer-agro h5 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .footer-agro p {
+            color: #c4d5c8;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .footer-agro small {
+            color: #a8bead;
+            font-size: 11px;
+        }
+
+        /* Accesibilidad y pantallas pequeñas */
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid #9acba4;
+            outline-offset: 3px;
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar-agro .navbar-nav {
+                padding-top: 12px;
+            }
+
+            .navbar-agro .nav-link {
+                padding: 10px 12px !important;
+            }
+
+            .hero-agro {
+                margin-top: 60px;
+            }
+
+            .hero-agro::after {
+                right: -100px;
+                font-size: 280px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .hero-overlay {
+                padding: 55px 0;
+            }
+
+            .hero-content h1 {
+                letter-spacing: -1px;
+            }
+
+            .hero-content p {
+                font-size: 14px;
+            }
+
+            .hero-content .btn {
+                width: 100%;
+                margin: 0 0 10px !important;
+            }
+
+            .contenido-agro {
+                padding-top: 45px;
+                padding-bottom: 50px;
+            }
+
+            .agro-card {
+                min-height: 215px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
 
 <body>
 
-
-    <!-- =========================
-         MENÚ PRINCIPAL
-    ========================== -->
+    <!-- MENÚ PRINCIPAL -->
 
     <nav class="navbar navbar-expand-lg navbar-dark navbar-agro fixed-top">
-
         <div class="container">
 
             <a class="navbar-brand fw-bold" href="index.html">
-
-                <i class="fa-solid fa-leaf me-2"></i>
-
-                AgroGestión
-
+                <i class="fa-solid fa-leaf me-2"></i>AgroGestión
             </a>
 
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
-
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
+                aria-controls="menu" aria-expanded="false" aria-label="Abrir menú de navegación">
                 <span class="navbar-toggler-icon"></span>
-
             </button>
 
-
             <div class="collapse navbar-collapse" id="menu">
-
-                <ul class="navbar-nav ms-auto">
-
-
-                    <!-- INICIO -->
+                <ul class="navbar-nav ms-auto align-items-lg-center">
 
                     <li class="nav-item">
-
-                        <a class="nav-link active" href="index.html">
-                            Inicio
-                        </a>
-
+                        <a class="nav-link active" aria-current="page" href="index.html">Inicio</a>
                     </li>
-
-
-                    <!-- PRODUCTOS -->
 
                     <li class="nav-item">
-
-                        <a class="nav-link" href="pages/productos.html">
-                            Productos
-                        </a>
-
+                        <a class="nav-link" href="pages/productos.html">Productos</a>
                     </li>
-
-
-                    <!-- INVENTARIO -->
 
                     <li class="nav-item">
-
-                        <a class="nav-link" href="pages/inventario.html">
-                            Inventario
-                        </a>
-
+                        <a class="nav-link" href="pages/inventario.html">Inventario</a>
                     </li>
-
-
-                    <!-- VENTAS -->
 
                     <li class="nav-item">
-
-                        <a class="nav-link" href="pages/ventas.html">
-                            Ventas
-                        </a>
-
+                        <a class="nav-link" href="pages/ventas.html">Ventas</a>
                     </li>
-
-
-                    <!-- CLIENTES -->
 
                     <li class="nav-item">
-
-                        <a class="nav-link" href="pages/clientes.html">
-                            Clientes
-                        </a>
-
+                        <a class="nav-link" href="pages/clientes.html">Clientes</a>
                     </li>
-
-
-                    <!-- PROVEEDORES -->
 
                     <li class="nav-item">
-
-                        <a id="menuProveedores" class="nav-link" href="pages/proveedores.html">
-
-                            Proveedores
-
-                        </a>
-
+                        <a id="menuProveedores" class="nav-link" href="pages/proveedores.html">Proveedores</a>
                     </li>
-
-
-                    <!-- LOTES -->
 
                     <li class="nav-item">
-
-                        <a class="nav-link" href="pages/lotes.html">
-                            Lotes
-                        </a>
-
+                        <a class="nav-link" href="pages/lotes.html">Lotes</a>
                     </li>
-
-
-                    <!-- CAJA -->
 
                     <li class="nav-item">
-
-                        <a id="menuCaja" class="nav-link" href="pages/caja.html">
-
-                            Caja
-
-                        </a>
-
+                        <a id="menuCaja" class="nav-link" href="pages/caja.html">Caja</a>
                     </li>
-
-
-                    <!-- REPORTES -->
 
                     <li class="nav-item">
-
-                        <a id="menuReportes" class="nav-link" href="pages/reportes.html">
-
-                            Reportes
-
-                        </a>
-
+                        <a id="menuReportes" class="nav-link" href="pages/reportes.html">Reportes</a>
                     </li>
 
-
-                    <!-- USUARIO -->
-
-                    <li class="nav-item ms-lg-3">
-
+                    <li class="nav-item ms-lg-2">
                         <span class="nav-link">
-
-                            <i class="fa-solid fa-user me-1"></i>
-
+                            <i class="fa-solid fa-circle-user me-1"></i>
                             <span id="usuarioActual"></span>
-
                         </span>
-
                     </li>
-
-
-                    <!-- CERRAR SESIÓN -->
 
                     <li class="nav-item">
-
                         <a href="#" id="cerrarSesion" class="nav-link">
-
                             <i class="fa-solid fa-right-from-bracket me-1"></i>
-
                             Salir
-
                         </a>
-
                     </li>
-
 
                 </ul>
-
             </div>
-
         </div>
-
     </nav>
 
-
-
-    <!-- =========================
-         PORTADA
-    ========================== -->
+    <!-- PORTADA -->
 
     <section class="hero-agro">
-
         <div class="hero-overlay">
-
             <div class="container">
-
                 <div class="hero-content">
 
                     <span class="hero-small-title">
                         SISTEMA DE GESTIÓN
                     </span>
 
-
-                    <h1>
-                        AgroGestión
-                    </h1>
-
+                    <h1>AgroGestión</h1>
 
                     <h2>
                         Gestión inteligente para tu negocio agroquímico
                     </h2>
 
-
                     <p>
-                        Controla productos, inventario, ventas, clientes
-                        y operaciones desde un solo lugar.
+                        Administra productos, controla existencias,
+                        registra ventas y organiza las operaciones
+                        de tu negocio desde una sola plataforma.
                     </p>
 
-
                     <div class="mt-4">
-
-
                         <a href="pages/ventas.html" class="btn btn-agro btn-lg me-2">
-
                             <i class="fa-solid fa-cart-shopping me-2"></i>
-
                             Ir a ventas
-
                         </a>
-
 
                         <a href="pages/inventario.html" class="btn btn-outline-light btn-lg">
-
                             <i class="fa-solid fa-boxes-stacked me-2"></i>
-
                             Ver inventario
-
                         </a>
-
-
                     </div>
 
                 </div>
-
             </div>
-
         </div>
-
     </section>
 
+    <!-- MÓDULOS DEL SISTEMA -->
 
-
-    <!-- =========================
-         CONTENIDO
-    ========================== -->
-
-    <main class="container py-5">
-
+    <main class="container contenido-agro">
 
         <div class="section-title text-center mb-5">
+            <span>PLATAFORMA DE ADMINISTRACIÓN</span>
 
-            <span>
-                ADMINISTRACIÓN
-            </span>
-
-
-            <h2>
-                Todo lo que necesitas en un solo lugar
-            </h2>
-
+            <h2>Todo tu negocio, organizado</h2>
 
             <p>
-                Accede rápidamente a las principales funciones
-                de AgroGestión.
+                Selecciona un módulo para consultar y gestionar
+                las operaciones de AgroGestión.
             </p>
-
         </div>
 
-
-
-        <!-- =========================
-             MÓDULOS
-        ========================== -->
+        <div class="modulos-label">
+            <i class="fa-solid fa-grip me-2"></i>
+            MÓDULOS DISPONIBLES
+        </div>
 
         <div class="row g-4">
-
 
             <!-- VENTAS -->
 
             <div class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-cart-shopping"></i>
-
                     </div>
-
-
-                    <h5>
-                        Ventas
-                    </h5>
-
-
-                    <p>
-                        Registra y consulta las ventas
-                        realizadas en el negocio.
-                    </p>
-
-
+                    <h5>Ventas</h5>
+                    <p>Registra operaciones y consulta las ventas realizadas.</p>
                     <a href="pages/ventas.html">
-
-                        Ir a ventas
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ir a ventas <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
-
-
 
             <!-- PRODUCTOS -->
 
             <div class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-flask"></i>
-
                     </div>
-
-
-                    <h5>
-                        Productos
-                    </h5>
-
-
-                    <p>
-                        Administra los productos
-                        agroquímicos del negocio.
-                    </p>
-
-
+                    <h5>Productos</h5>
+                    <p>Administra el catálogo de productos agroquímicos.</p>
                     <a href="pages/productos.html">
-
-                        Ver productos
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ver productos <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
-
-
 
             <!-- INVENTARIO -->
 
             <div class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-boxes-stacked"></i>
-
                     </div>
-
-
-                    <h5>
-                        Inventario
-                    </h5>
-
-
-                    <p>
-                        Controla existencias y movimientos
-                        de los productos.
-                    </p>
-
-
+                    <h5>Inventario</h5>
+                    <p>Consulta existencias y movimientos de productos.</p>
                     <a href="pages/inventario.html">
-
-                        Ver inventario
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ver inventario <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
-
-
 
             <!-- CLIENTES -->
 
             <div class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-users"></i>
-
                     </div>
-
-
-                    <h5>
-                        Clientes
-                    </h5>
-
-
-                    <p>
-                        Registra y administra la información
-                        de tus clientes.
-                    </p>
-
-
+                    <h5>Clientes</h5>
+                    <p>Registra y administra la información de tus clientes.</p>
                     <a href="pages/clientes.html">
-
-                        Ver clientes
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ver clientes <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
-
-
 
             <!-- PROVEEDORES -->
 
             <div id="tarjetaProveedores" class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-truck"></i>
-
                     </div>
-
-
-                    <h5>
-                        Proveedores
-                    </h5>
-
-
-                    <p>
-                        Administra proveedores y procesos
-                        de abastecimiento.
-                    </p>
-
-
+                    <h5>Proveedores</h5>
+                    <p>Organiza la información de proveedores y abastecimiento.</p>
                     <a href="pages/proveedores.html">
-
-                        Ver proveedores
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ver proveedores <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
-
-
 
             <!-- LOTES -->
 
             <div class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-barcode"></i>
-
                     </div>
-
-
-                    <h5>
-                        Lotes
-                    </h5>
-
-
-                    <p>
-                        Controla lotes y fechas
-                        de vencimiento.
-                    </p>
-
-
+                    <h5>Lotes</h5>
+                    <p>Controla los lotes y sus fechas de vencimiento.</p>
                     <a href="pages/lotes.html">
-
-                        Ver lotes
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ver lotes <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
-
-
 
             <!-- CAJA -->
 
             <div id="tarjetaCaja" class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-cash-register"></i>
-
                     </div>
-
-
-                    <h5>
-                        Caja
-                    </h5>
-
-
-                    <p>
-                        Controla ingresos, egresos
-                        y movimientos de caja.
-                    </p>
-
-
+                    <h5>Caja</h5>
+                    <p>Controla ingresos, egresos y movimientos de caja.</p>
                     <a href="pages/caja.html">
-
-                        Ver caja
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ver caja <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
-
-
 
             <!-- REPORTES -->
 
             <div id="tarjetaReportes" class="col-md-6 col-lg-3">
-
                 <div class="agro-card">
-
                     <div class="icon-box">
-
                         <i class="fa-solid fa-chart-column"></i>
-
                     </div>
-
-
-                    <h5>
-                        Reportes
-                    </h5>
-
-
-                    <p>
-                        Consulta información y resultados
-                        del negocio.
-                    </p>
-
-
+                    <h5>Reportes</h5>
+                    <p>Consulta indicadores e información del negocio.</p>
                     <a href="pages/reportes.html">
-
-                        Ver reportes
-
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-
+                        Ver reportes <i class="fa-solid fa-arrow-right"></i>
                     </a>
-
                 </div>
-
             </div>
 
-
         </div>
-
     </main>
 
-
-
-    <!-- =========================
-         PIE DE PÁGINA
-    ========================== -->
+    <!-- PIE DE PÁGINA -->
 
     <footer class="footer-agro">
-
         <div class="container text-center">
-
             <i class="fa-solid fa-leaf mb-2"></i>
-
-
-            <h5>
-                AgroGestión
-            </h5>
-
-
-            <p>
-                Sistema de Gestión de Agroquímicos
-            </p>
-
-
-            <small>
-                SENA - Análisis y Desarrollo de Software - 2026
-            </small>
-
+            <h5>AgroGestión</h5>
+            <p>Sistema de Gestión de Agroquímicos</p>
+            <small>SENA - Análisis y Desarrollo de Software - 2026</small>
         </div>
-
     </footer>
 
-
-
-    <!-- Bootstrap JS -->
+    <!-- SCRIPTS EXISTENTES -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-    <!-- JavaScript existente -->
-
     <script src="js/app.js"></script>
-
-
-    <!-- Sesión -->
-
     <script src="js/sesion-index.js"></script>
-
-
-    <!-- Permisos -->
-
     <script src="js/permisos-index.js"></script>
-
 
 </body>
 

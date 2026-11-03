@@ -1,23 +1,17 @@
 // ==========================================
-// DATOS GUARDADOS
+// CONFIGURACIÓN DE LA API
 // ==========================================
 
-let productos = JSON.parse(localStorage.getItem("productos")) || [];
-
-let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-
-let ventas = JSON.parse(localStorage.getItem("ventas")) || [];
-
-let movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
-
-let lotes = JSON.parse(localStorage.getItem("lotes")) || [];
-
-let movimientosCaja = JSON.parse(localStorage.getItem("movimientosCaja")) || [];
+const API = "http://127.0.0.1:5001/api";
 
 // ==========================================
-// CARRITO
+// DATOS
 // ==========================================
 
+let productos = [];
+let clientes = [];
+let lotes = [];
+let ventas = [];
 let carrito = [];
 
 // ==========================================
@@ -25,136 +19,167 @@ let carrito = [];
 // ==========================================
 
 const selectorCliente = document.getElementById("cliente");
-
 const selectorProducto = document.getElementById("producto");
-
 const selectorLote = document.getElementById("lote");
-
 const inputCantidad = document.getElementById("cantidad");
 
 const botonAgregar = document.getElementById("botonAgregar");
-
 const botonRegistrarVenta = document.getElementById("botonRegistrarVenta");
 
 const tablaCarrito = document.getElementById("tablaCarrito");
-
 const tablaVentas = document.getElementById("tablaVentas");
-
 const elementoTotal = document.getElementById("total");
 
 // ==========================================
-// CARGAR CLIENTES
+// FUNCIONES AUXILIARES
 // ==========================================
 
-function cargarClientes() {
-  selectorCliente.innerHTML = `
-        <option value="">
-            Seleccione un cliente
-        </option>
-    `;
+function formatoMoneda(valor) {
+  return Number(valor || 0).toLocaleString("es-CO");
+}
 
-  clientes.forEach(function (cliente, indice) {
-    const opcion = document.createElement("option");
+function escaparHTML(valor) {
+  return String(valor ?? "").replace(/[&<>"']/g, function (caracter) {
+    const caracteres = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
 
-    opcion.value = indice;
-
-    opcion.textContent = cliente.documento + " - " + cliente.nombre;
-
-    selectorCliente.appendChild(opcion);
+    return caracteres[caracter];
   });
 }
 
+async function consultarAPI(ruta, opciones = {}) {
+  const respuesta = await fetch(API + ruta, {
+    ...opciones,
+    headers: {
+      "Content-Type": "application/json",
+      ...(opciones.headers || {}),
+    },
+  });
+
+  const datos = await respuesta.json();
+
+  if (!respuesta.ok) {
+    throw new Error(datos.error || "Ocurrió un error en el servidor.");
+  }
+
+  return datos;
+}
+
 // ==========================================
-// CARGAR PRODUCTOS
+// CARGAR CLIENTES DESDE MYSQL
 // ==========================================
 
-function cargarProductos() {
-  selectorProducto.innerHTML = `
-        <option value="">
-            Seleccione un producto
-        </option>
-    `;
+async function cargarClientes() {
+  try {
+    clientes = await consultarAPI("/clientes");
 
-  productos.forEach(function (producto, indice) {
-    if (producto.estado === "Activo" && Number(producto.stock) > 0) {
-      const opcion = document.createElement("option");
+    selectorCliente.innerHTML = `
+            <option value="">Seleccione un cliente</option>
+        `;
 
-      opcion.value = indice;
+    clientes.forEach(function (cliente) {
+      if (cliente.estado === "Activo") {
+        const opcion = document.createElement("option");
 
-      opcion.textContent =
-        producto.codigo +
-        " - " +
-        producto.nombre +
-        " - $" +
-        Number(producto.precio).toLocaleString("es-CO");
+        opcion.value = cliente.id;
 
-      selectorProducto.appendChild(opcion);
+        opcion.textContent = cliente.documento + " - " + cliente.nombre;
+
+        selectorCliente.appendChild(opcion);
+      }
+    });
+  } catch (error) {
+    console.error("Error al cargar clientes:", error);
+    alert("No se pudieron cargar los clientes: " + error.message);
+  }
+}
+
+// ==========================================
+// CARGAR PRODUCTOS DESDE MYSQL
+// ==========================================
+
+async function cargarProductos() {
+  try {
+    productos = await consultarAPI("/productos");
+
+    selectorProducto.innerHTML = `
+            <option value="">Seleccione un producto</option>
+        `;
+
+    productos.forEach(function (producto) {
+      if (producto.estado === "Activo" && Number(producto.stock) > 0) {
+        const opcion = document.createElement("option");
+
+        opcion.value = producto.codigo;
+
+        opcion.textContent =
+          producto.codigo +
+          " - " +
+          producto.nombre +
+          " - $" +
+          formatoMoneda(producto.precio);
+
+        selectorProducto.appendChild(opcion);
+      }
+    });
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+    alert("No se pudieron cargar los productos: " + error.message);
+  }
+}
+
+// ==========================================
+// CARGAR LOTES DESDE MYSQL
+// ==========================================
+
+async function cargarLotes() {
+  try {
+    lotes = await consultarAPI("/lotes");
+
+    selectorLote.innerHTML = `
+            <option value="">Seleccione un lote</option>
+        `;
+
+    const codigoProducto = selectorProducto.value;
+
+    if (!codigoProducto) {
+      return;
     }
-  });
-}
-
-// ==========================================
-// CARGAR LOTES DEL PRODUCTO
-// ==========================================
-
-function cargarLotes() {
-  // Actualizar lotes desde LocalStorage
-
-  lotes = JSON.parse(localStorage.getItem("lotes")) || [];
-
-  selectorLote.innerHTML = `
-        <option value="">
-            Seleccione un lote
-        </option>
-    `;
-
-  const indiceProducto = selectorProducto.value;
-
-  if (indiceProducto === "") {
-    return;
-  }
-
-  const producto = productos[indiceProducto];
-
-  if (!producto) {
-    return;
-  }
-
-  lotes.forEach(function (lote, indice) {
-    const cantidadLote = Number(lote.cantidad) || 0;
-
-    // Verificar que pertenece al producto
-
-    const mismoProducto = lote.productoCodigo === producto.codigo;
-
-    // Verificar estado
-
-    const disponible = lote.estado === "Disponible";
-
-    // Verificar cantidad
-
-    const tieneCantidad = cantidadLote > 0;
-
-    // Verificar vencimiento
 
     const hoy = new Date();
-
     hoy.setHours(0, 0, 0, 0);
 
-    const vencimiento = new Date(lote.fechaVencimiento + "T00:00:00");
+    lotes.forEach(function (lote) {
+      const fechaVencimiento = new Date(lote.fechaVencimiento + "T00:00:00");
 
-    const noVencido = vencimiento >= hoy;
+      const mismoProducto = lote.productoCodigo === codigoProducto;
 
-    if (mismoProducto && disponible && tieneCantidad && noVencido) {
-      const opcion = document.createElement("option");
+      const disponible = lote.estado === "Disponible";
 
-      opcion.value = indice;
+      const tieneCantidad = Number(lote.cantidad) > 0;
 
-      opcion.textContent = lote.numeroLote + " - Disponible: " + cantidadLote;
+      const noVencido = fechaVencimiento >= hoy;
 
-      selectorLote.appendChild(opcion);
-    }
-  });
+      if (mismoProducto && disponible && tieneCantidad && noVencido) {
+        const opcion = document.createElement("option");
+
+        opcion.value = lote.id;
+
+        opcion.textContent =
+          lote.numeroLote + " - Disponible: " + lote.cantidad;
+
+        selectorLote.appendChild(opcion);
+      }
+    });
+  } catch (error) {
+    console.error("Error al cargar lotes:", error);
+    alert("No se pudieron cargar los lotes: " + error.message);
+  }
 }
 
 // ==========================================
@@ -177,148 +202,93 @@ function mostrarCarrito() {
   carrito.forEach(function (item, indice) {
     const subtotal = Number(item.precio) * Number(item.cantidad);
 
-    total = total + subtotal;
+    total += subtotal;
 
     const fila = document.createElement("tr");
 
     fila.innerHTML = `
-
             <td>
-
                 <span class="nombre-producto">
-
                     <i class="fa-solid fa-box producto-mini-icon"></i>
-
-                    ${item.nombre}
-
+                    ${escaparHTML(item.nombre)}
                 </span>
-
             </td>
 
-
             <td>
-
-                $${Number(item.precio).toLocaleString("es-CO")}
-
+                $${formatoMoneda(item.precio)}
             </td>
 
-
             <td>
-
                 ${item.cantidad}
-
             </td>
 
-
             <td>
-
-                <strong>
-
-                    $${subtotal.toLocaleString("es-CO")}
-
-                </strong>
-
+                <strong>$${formatoMoneda(subtotal)}</strong>
             </td>
 
-
             <td>
-
                 <button
                     class="btn btn-accion btn-eliminar"
                     onclick="eliminarDelCarrito(${indice})"
                     title="Eliminar producto"
                 >
-
                     <i class="fa-solid fa-trash"></i>
-
                 </button>
-
             </td>
-
         `;
 
     tablaCarrito.appendChild(fila);
   });
 
-  elementoTotal.textContent = total.toLocaleString("es-CO");
+  elementoTotal.textContent = formatoMoneda(total);
 }
 
 // ==========================================
-// AGREGAR PRODUCTO
+// AGREGAR PRODUCTO AL CARRITO
 // ==========================================
 
 botonAgregar.addEventListener("click", function () {
-  const indiceProducto = selectorProducto.value;
+  const codigoProducto = selectorProducto.value;
 
-  const indiceLote = selectorLote.value;
+  const loteId = Number(selectorLote.value);
 
   const cantidad = Number(inputCantidad.value);
 
-  // ==================================
-  // VALIDAR PRODUCTO
-  // ==================================
-
-  if (indiceProducto === "") {
+  if (!codigoProducto) {
     alert("Seleccione un producto.");
-
     return;
   }
 
-  // ==================================
-  // VALIDAR LOTE
-  // ==================================
-
-  if (indiceLote === "") {
+  if (!loteId) {
     alert("Seleccione un lote.");
-
     return;
   }
 
-  // ==================================
-  // VALIDAR CANTIDAD
-  // ==================================
-
-  if (cantidad <= 0 || isNaN(cantidad)) {
-    alert("La cantidad debe ser mayor que cero.");
-
+  if (!Number.isInteger(cantidad) || cantidad <= 0) {
+    alert("La cantidad debe ser un número entero mayor que cero.");
     return;
   }
 
-  const producto = productos[indiceProducto];
+  const producto = productos.find(function (item) {
+    return item.codigo === codigoProducto;
+  });
 
-  const lote = lotes[indiceLote];
+  const lote = lotes.find(function (item) {
+    return Number(item.id) === loteId;
+  });
 
-  if (!producto) {
-    alert("No se encontró el producto.");
-
+  if (!producto || !lote) {
+    alert("No se encontró el producto o el lote.");
     return;
   }
-
-  if (!lote) {
-    alert("No se encontró el lote.");
-
-    return;
-  }
-
-  // ==================================
-  // VERIFICAR CANTIDAD DEL LOTE
-  // ==================================
 
   if (cantidad > Number(lote.cantidad)) {
     alert("La cantidad supera la disponibilidad del lote.");
-
     return;
   }
 
-  // ==================================
-  // BUSCAR PRODUCTO + LOTE
-  // ==================================
-
   const productoExistente = carrito.find(function (item) {
-    return (
-      item.indiceProducto === Number(indiceProducto) &&
-      item.indiceLote === Number(indiceLote)
-    );
+    return item.productoCodigo === codigoProducto && item.loteId === loteId;
   });
 
   if (productoExistente) {
@@ -326,38 +296,26 @@ botonAgregar.addEventListener("click", function () {
 
     if (nuevaCantidad > Number(lote.cantidad)) {
       alert("La cantidad supera la disponibilidad del lote.");
-
       return;
     }
 
     productoExistente.cantidad = nuevaCantidad;
   } else {
     carrito.push({
-      indiceProducto: Number(indiceProducto),
-
-      indiceLote: Number(indiceLote),
-
+      productoCodigo: producto.codigo,
+      loteId: lote.id,
       nombre: producto.nombre,
-
       numeroLote: lote.numeroLote,
-
       precio: Number(producto.precio),
-
       cantidad: cantidad,
     });
   }
 
-  // ==================================
-  // LIMPIAR
-  // ==================================
-
   selectorProducto.value = "";
 
   selectorLote.innerHTML = `
-            <option value="">
-                Seleccione un lote
-            </option>
-        `;
+        <option value="">Seleccione un lote</option>
+    `;
 
   inputCantidad.value = 1;
 
@@ -375,550 +333,371 @@ function eliminarDelCarrito(indice) {
 }
 
 // ==========================================
-// REGISTRAR VENTA
+// REGISTRAR VENTA EN MYSQL
 // ==========================================
 
-botonRegistrarVenta.addEventListener("click", function () {
-  const indiceCliente = selectorCliente.value;
+botonRegistrarVenta.addEventListener("click", async function () {
+  const clienteId = Number(selectorCliente.value);
 
   const metodoPago = document.getElementById("metodoPago").value;
 
-  // ==================================
-  // VALIDAR CLIENTE
-  // ==================================
-
-  if (indiceCliente === "") {
+  if (!clienteId) {
     alert("Seleccione un cliente.");
-
     return;
   }
 
-  // ==================================
-  // VALIDAR MÉTODO DE PAGO
-  // ==================================
-
-  if (metodoPago === "") {
+  if (!metodoPago) {
     alert("Seleccione un método de pago.");
-
     return;
   }
-
-  // ==================================
-  // VALIDAR CARRITO
-  // ==================================
 
   if (carrito.length === 0) {
     alert("Debe agregar al menos un producto.");
-
     return;
   }
 
-  const cliente = clientes[indiceCliente];
-
-  if (!cliente) {
-    alert("No se encontró el cliente.");
-
-    return;
-  }
-
-  // ==================================
-  // CALCULAR TOTAL
-  // ==================================
-
-  let total = 0;
-
-  carrito.forEach(function (item) {
-    total = total + Number(item.precio) * Number(item.cantidad);
-  });
-
-  // ==================================
-  // VERIFICAR STOCK DE PRODUCTOS Y LOTES
-  // ==================================
-
-  for (let item of carrito) {
-    const producto = productos[item.indiceProducto];
-
-    const lote = lotes[item.indiceLote];
-
-    if (!producto) {
-      alert("No se encontró uno de los productos.");
-
-      return;
-    }
-
-    if (!lote) {
-      alert("No se encontró uno de los lotes.");
-
-      return;
-    }
-
-    if (Number(item.cantidad) > Number(producto.stock)) {
-      alert("No hay suficiente stock para " + producto.nombre);
-
-      return;
-    }
-
-    if (Number(item.cantidad) > Number(lote.cantidad)) {
-      alert("No hay suficiente cantidad en el lote " + lote.numeroLote);
-
-      return;
-    }
-  }
-
-  // ==================================
-  // FECHA
-  // ==================================
-
-  const fecha = new Date().toLocaleString("es-CO");
-
-  // ==================================
-  // DESCONTAR STOCK Y LOTES
-  // ==================================
-
-  carrito.forEach(function (item) {
-    const producto = productos[item.indiceProducto];
-
-    const lote = lotes[item.indiceLote];
-
-    // Descontar stock general
-
-    producto.stock = Number(producto.stock) - Number(item.cantidad);
-
-    // Descontar cantidad del lote
-
-    lote.cantidad = Number(lote.cantidad) - Number(item.cantidad);
-
-    // Actualizar estado del lote
-
-    if (lote.cantidad <= 0) {
-      lote.cantidad = 0;
-
-      lote.estado = "Agotado";
-    } else {
-      lote.estado = "Disponible";
-    }
-
-    // ==================================
-    // REGISTRAR SALIDA
-    // ==================================
-
-    const nuevoMovimiento = {
-      fecha: fecha,
-
-      producto: producto.nombre,
-
-      lote: lote.numeroLote,
-
-      tipo: "Salida",
-
-      cantidad: Number(item.cantidad),
-    };
-
-    movimientos.push(nuevoMovimiento);
-  });
-
-  // ==================================
-  // CREAR VENTA
-  // ==================================
-
-  const nuevaVenta = {
-    fecha: fecha,
-
-    cliente: cliente.nombre,
-
-    total: total,
-
+  const datosVenta = {
+    clienteId: clienteId,
     metodoPago: metodoPago,
+    usuarioId: null,
 
-    productos: carrito,
+    productos: carrito.map(function (item) {
+      return {
+        productoCodigo: item.productoCodigo,
+        loteId: item.loteId,
+        cantidad: item.cantidad,
+      };
+    }),
   };
 
-  // ==================================
-  // GUARDAR VENTA
-  // ==========================================
+  botonRegistrarVenta.disabled = true;
 
-  ventas.push(nuevaVenta);
+  try {
+    const resultado = await consultarAPI("/ventas", {
+      method: "POST",
+      body: JSON.stringify(datosVenta),
+    });
 
-  localStorage.setItem("ventas", JSON.stringify(ventas));
+    alert(
+      "Venta registrada correctamente.\n\n" +
+        "Número de venta: " +
+        resultado.ventaId +
+        "\n" +
+        "Total: $" +
+        formatoMoneda(resultado.total),
+    );
 
-  // ==========================================
-  // REGISTRAR INGRESO EN CAJA
-  // ==========================================
+    // Vaciar carrito
+    carrito = [];
 
-  const movimientoCaja = {
-    fecha: fecha,
+    // Limpiar campos
+    selectorCliente.value = "";
 
-    tipo: "Ingreso",
+    document.getElementById("metodoPago").value = "";
 
-    concepto: "Venta - " + cliente.nombre,
+    selectorProducto.value = "";
 
-    valor: total,
-  };
-
-  movimientosCaja.push(movimientoCaja);
-
-  localStorage.setItem("movimientosCaja", JSON.stringify(movimientosCaja));
-
-  // ==================================
-  // GUARDAR PRODUCTOS
-  // ==========================================
-
-  localStorage.setItem("productos", JSON.stringify(productos));
-
-  // ==================================
-  // GUARDAR LOTES
-  // ==========================================
-
-  localStorage.setItem("lotes", JSON.stringify(lotes));
-
-  // ==================================
-  // GUARDAR MOVIMIENTOS
-  // ==========================================
-
-  localStorage.setItem("movimientos", JSON.stringify(movimientos));
-
-  // ==================================
-  // VACIAR CARRITO
-  // ==================================
-
-  carrito = [];
-
-  // ==================================
-  // LIMPIAR CAMPOS
-  // ==================================
-
-  selectorCliente.value = "";
-
-  document.getElementById("metodoPago").value = "";
-
-  selectorProducto.value = "";
-
-  selectorLote.innerHTML = `
-            <option value="">
-                Seleccione un lote
-            </option>
+    selectorLote.innerHTML = `
+            <option value="">Seleccione un lote</option>
         `;
 
-  inputCantidad.value = 1;
+    inputCantidad.value = 1;
 
-  // ==================================
-  // ACTUALIZAR
-  // ==================================
+    mostrarCarrito();
 
-  mostrarCarrito();
+    // Actualizar información desde MySQL
+    await cargarProductos();
+    await cargarLotes();
+    await mostrarVentas();
+  } catch (error) {
+    console.error("Error al registrar venta:", error);
 
-  mostrarVentas();
-
-  cargarProductos();
-
-  // ==================================
-  // MENSAJE
-  // ==================================
-
-  alert("Venta registrada correctamente.");
+    alert("No se pudo registrar la venta:\n" + error.message);
+  } finally {
+    botonRegistrarVenta.disabled = false;
+  }
 });
 
 // ==========================================
-// HISTORIAL DE VENTAS
+// CONSULTAR HISTORIAL DE VENTAS
 // ==========================================
 
-function mostrarVentas() {
+async function mostrarVentas() {
   tablaVentas.innerHTML = "";
 
-  if (ventas.length === 0) {
-    tablaVentas.innerHTML = `
+  try {
+    ventas = await consultarAPI("/ventas");
 
-            <tr>
+    if (ventas.length === 0) {
+      tablaVentas.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-4">
+                        <i class="fa-solid fa-receipt me-2"></i>
+                        No hay ventas registradas.
+                    </td>
+                </tr>
+            `;
 
-                <td
-                    colspan="6"
-                    class="text-center py-4"
-                >
+      return;
+    }
 
-                    <i class="fa-solid fa-receipt me-2"></i>
+    ventas.forEach(function (venta) {
+      const fila = document.createElement("tr");
 
-                    No hay ventas registradas.
+      fila.innerHTML = `
+                <td>${escaparHTML(venta.fecha)}</td>
 
+                <td>${escaparHTML(venta.cliente)}</td>
+
+                <td>
+                    <strong>
+                        $${formatoMoneda(venta.total)}
+                    </strong>
                 </td>
 
+                <td>${escaparHTML(venta.metodoPago || "")}</td>
+
+                <td>${escaparHTML(venta.estado || "")}</td>
+
+                <td>
+                    <button
+                        class="btn btn-accion btn-agro"
+                        onclick="verDetalleVenta(${venta.id})"
+                        title="Ver detalle de la venta"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+
+                    <button
+                        class="btn btn-accion btn-agro"
+                        onclick="registrarDevolucion(${venta.id})"
+                        title="Registrar devolución"
+                        ${venta.estado === "Devuelta" ? "disabled" : ""}
+                    >
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </td>
+            `;
+
+      tablaVentas.appendChild(fila);
+    });
+  } catch (error) {
+    console.error("Error al consultar ventas:", error);
+
+    tablaVentas.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center py-4">
+                    No se pudo cargar el historial de ventas.
+                </td>
             </tr>
-
         `;
-
-    return;
   }
-
-  ventas.forEach(function (venta) {
-    const fila = document.createElement("tr");
-
-    fila.innerHTML = `
-
-            <td>
-                ${venta.fecha}
-            </td>
-
-            <td>
-                ${venta.cliente}
-            </td>
-
-            <td>
-                <strong>
-                    $${Number(venta.total).toLocaleString("es-CO")}
-                </strong>
-            </td>
-
-            <td>
-    ${venta.metodoPago}
-
-<td>
-
-
-    <button
-        class="btn btn-accion btn-agro"
-        onclick="verDetalleVenta(${ventas.indexOf(venta)})"
-        title="Ver detalle de la venta"
-    >
-        <i class="fa-solid fa-eye"></i>
-    </button>
-
-    <button
-        class="btn btn-accion btn-agro"
-        onclick="registrarDevolucion(${ventas.indexOf(venta)})"
-        title="Registrar devolución"
-    >
-        <i class="fa-solid fa-rotate-left"></i>
-    </button>
-
-</td>
-
-        `;
-
-    tablaVentas.appendChild(fila);
-  });
 }
 
 // ==========================================
 // VER DETALLE DE UNA VENTA
 // ==========================================
 
-function verDetalleVenta(indice) {
-  const venta = ventas[indice];
+async function verDetalleVenta(ventaId) {
+  try {
+    const venta = await consultarAPI("/ventas/" + ventaId);
 
-  if (!venta) {
-    alert("No se encontró la venta.");
+    let detalle = "";
 
-    return;
+    detalle += "DETALLE DE LA VENTA\n\n";
+
+    detalle += "Número: " + venta.id + "\n";
+
+    detalle += "Fecha: " + venta.fecha + "\n";
+
+    detalle += "Cliente: " + venta.cliente + "\n";
+
+    detalle += "Método de pago: " + venta.metodoPago + "\n";
+
+    detalle += "Estado: " + venta.estado + "\n\n";
+
+    detalle += "PRODUCTOS:\n";
+
+    venta.productos.forEach(function (item) {
+      detalle +=
+        "- " +
+        item.producto +
+        " | Lote: " +
+        (item.numeroLote || "Sin lote") +
+        " | Vendido: " +
+        item.cantidad +
+        " | Devuelto: " +
+        item.cantidadDevuelta +
+        " | Precio: $" +
+        formatoMoneda(item.precio) +
+        "\n";
+    });
+
+    detalle += "\nTotal: $" + formatoMoneda(venta.total);
+
+    alert(detalle);
+  } catch (error) {
+    console.error("Error al consultar detalle:", error);
+
+    alert("No se pudo consultar el detalle:\n" + error.message);
   }
-
-  let detalle = "";
-
-  detalle += "DETALLE DE LA VENTA\n\n";
-
-  detalle += "Fecha: " + venta.fecha + "\n";
-
-  detalle += "Cliente: " + venta.cliente + "\n";
-
-  detalle += "Método de pago: " + venta.metodoPago + "\n\n";
-
-  detalle += "PRODUCTOS:\n";
-
-  venta.productos.forEach(function (item) {
-    detalle +=
-      "- " +
-      item.nombre +
-      " | Lote: " +
-      item.numeroLote +
-      " | Cantidad: " +
-      item.cantidad +
-      "\n";
-  });
-
-  detalle += "\nTotal: $" + Number(venta.total).toLocaleString("es-CO");
-
-  alert(detalle);
 }
 
 // ==========================================
-// REGISTRAR DEVOLUCIÓN
+// REGISTRAR DEVOLUCIÓN EN MYSQL
 // ==========================================
 
-function registrarDevolucion(indiceVenta) {
-  const venta = ventas[indiceVenta];
+async function registrarDevolucion(ventaId) {
+  try {
+    const venta = await consultarAPI("/ventas/" + ventaId);
 
-  if (!venta) {
-    alert("No se encontró la venta.");
-    return;
-  }
+    if (!venta.productos || venta.productos.length === 0) {
+      alert("Esta venta no tiene productos.");
+      return;
+    }
 
-  if (!venta.productos || venta.productos.length === 0) {
-    alert("Esta venta no tiene productos.");
-    return;
-  }
+    const productosDisponibles = venta.productos.filter(function (item) {
+      return Number(item.cantidad) - Number(item.cantidadDevuelta) > 0;
+    });
 
-  let mensaje = "PRODUCTOS DE LA VENTA:\n\n";
+    if (productosDisponibles.length === 0) {
+      alert("Todos los productos de esta venta ya fueron devueltos.");
+      return;
+    }
 
-  venta.productos.forEach(function (item, indice) {
-    const cantidadDevuelta = Number(item.cantidadDevuelta) || 0;
-    const disponibleDevolver = Number(item.cantidad) - cantidadDevuelta;
+    let mensaje = "PRODUCTOS DE LA VENTA:\n\n";
 
-    mensaje +=
-      indice +
-      1 +
-      ". " +
-      item.nombre +
-      " | Lote: " +
-      item.numeroLote +
-      " | Vendido: " +
-      item.cantidad +
-      " | Disponible para devolver: " +
-      disponibleDevolver +
-      "\n";
-  });
+    venta.productos.forEach(function (item, indice) {
+      const disponible = Number(item.cantidad) - Number(item.cantidadDevuelta);
 
-  const seleccion = prompt(
-    mensaje + "\nEscribe el número del producto que deseas devolver:",
-  );
+      mensaje +=
+        indice +
+        1 +
+        ". " +
+        item.producto +
+        " | Lote: " +
+        (item.numeroLote || "Sin lote") +
+        " | Vendido: " +
+        item.cantidad +
+        " | Devuelto: " +
+        item.cantidadDevuelta +
+        " | Disponible para devolver: " +
+        disponible +
+        "\n";
+    });
 
-  if (seleccion === null) {
-    return;
-  }
+    const seleccion = prompt(
+      mensaje + "\nEscribe el número del producto que deseas devolver:",
+    );
 
-  const indiceProducto = Number(seleccion) - 1;
+    if (seleccion === null) {
+      return;
+    }
 
-  if (indiceProducto < 0 || indiceProducto >= venta.productos.length) {
-    alert("Producto seleccionado no válido.");
-    return;
-  }
+    if (!/^\d+$/.test(seleccion)) {
+      alert("Debes escribir un número válido.");
+      return;
+    }
 
-  const item = venta.productos[indiceProducto];
+    const indiceProducto = Number(seleccion) - 1;
 
-  const cantidadDevueltaActual = Number(item.cantidadDevuelta) || 0;
+    if (indiceProducto < 0 || indiceProducto >= venta.productos.length) {
+      alert("Producto seleccionado no válido.");
+      return;
+    }
 
-  const disponibleDevolver = Number(item.cantidad) - cantidadDevueltaActual;
+    const item = venta.productos[indiceProducto];
 
-  if (disponibleDevolver <= 0) {
-    alert("Este producto ya fue devuelto completamente.");
-    return;
-  }
+    const disponible = Number(item.cantidad) - Number(item.cantidadDevuelta);
 
-  const cantidad = Number(
-    prompt(
+    if (disponible <= 0) {
+      alert("Este producto ya fue devuelto completamente.");
+      return;
+    }
+
+    const respuestaCantidad = prompt(
       "Cantidad a devolver de " +
-        item.nombre +
-        ":\n\n" +
-        "Máximo permitido: " +
-        disponibleDevolver,
-    ),
-  );
+        item.producto +
+        ":\n\nMáximo permitido: " +
+        disponible,
+    );
 
-  if (!Number.isInteger(cantidad) || cantidad <= 0) {
-    alert("La cantidad debe ser un número entero mayor que 0.");
-    return;
+    if (respuestaCantidad === null) {
+      return;
+    }
+
+    if (!/^\d+$/.test(respuestaCantidad)) {
+      alert("La cantidad debe ser un número entero válido.");
+      return;
+    }
+
+    const cantidad = Number(respuestaCantidad);
+
+    if (cantidad <= 0 || cantidad > disponible) {
+      alert("La cantidad supera las unidades que se pueden devolver.");
+      return;
+    }
+
+    const confirmar = confirm(
+      "¿Deseas registrar esta devolución?\n\n" +
+        "Producto: " +
+        item.producto +
+        "\n" +
+        "Cantidad: " +
+        cantidad +
+        "\n" +
+        "Valor a devolver: $" +
+        formatoMoneda(Number(item.precio) * cantidad),
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    const resultado = await consultarAPI(
+      "/ventas/" + ventaId + "/devoluciones",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          detalleId: item.id,
+          cantidad: cantidad,
+        }),
+      },
+    );
+
+    alert(
+      resultado.mensaje +
+        "\n\nCantidad devuelta: " +
+        resultado.cantidadDevuelta +
+        "\nValor devuelto: $" +
+        formatoMoneda(resultado.valorDevuelto),
+    );
+
+    // Actualizar información desde MySQL
+    await cargarProductos();
+    await cargarLotes();
+    await mostrarVentas();
+  } catch (error) {
+    console.error("Error al registrar devolución:", error);
+
+    alert("No se pudo registrar la devolución:\n" + error.message);
   }
-
-  if (cantidad > disponibleDevolver) {
-    alert("No puedes devolver más de la cantidad vendida.");
-    return;
-  }
-
-  // ==========================================
-  // CALCULAR VALOR DE LA DEVOLUCIÓN
-  // ==========================================
-
-  const valorDevolucion = Number(item.precio) * cantidad;
-
-  // Buscar el producto
-  const producto = productos[item.indiceProducto];
-
-  if (!producto) {
-    alert("No se encontró el producto.");
-    return;
-  }
-
-  // Buscar el lote
-  const lote = lotes[item.indiceLote];
-
-  if (!lote) {
-    alert("No se encontró el lote.");
-    return;
-  }
-
-  // Devolver al stock del producto
-  producto.stock = (Number(producto.stock) || 0) + cantidad;
-
-  // Devolver al lote
-  lote.cantidad = (Number(lote.cantidad) || 0) + cantidad;
-
-  lote.estado = "Disponible";
-
-  // Guardar cantidad devuelta
-  item.cantidadDevuelta = cantidadDevueltaActual + cantidad;
-
-  // Guardar valor devuelto
-  item.valorDevuelto = (Number(item.valorDevuelto) || 0) + valorDevolucion;
-
-  // Registrar movimiento
-  movimientos.push({
-    fecha: new Date().toLocaleString("es-CO"),
-    producto: item.nombre,
-    lote: item.numeroLote,
-    tipo: "Entrada",
-    cantidad: cantidad,
-  });
-
-  // ==========================================
-  // REGISTRAR DEVOLUCIÓN EN CAJA
-  // ==========================================
-
-  movimientosCaja = JSON.parse(localStorage.getItem("movimientosCaja")) || [];
-
-  movimientosCaja.push({
-    fecha: new Date().toLocaleString("es-CO"),
-
-    tipo: "Egreso",
-
-    concepto: "Devolución - " + item.nombre,
-
-    valor: valorDevolucion,
-  });
-
-  localStorage.setItem("movimientosCaja", JSON.stringify(movimientosCaja));
-
-  // Guardar información actualizada
-  localStorage.setItem("productos", JSON.stringify(productos));
-
-  localStorage.setItem("lotes", JSON.stringify(lotes));
-
-  localStorage.setItem("movimientos", JSON.stringify(movimientos));
-
-  localStorage.setItem("ventas", JSON.stringify(ventas));
-
-  alert(
-    "Devolución registrada correctamente.\n\n" +
-    "Producto: " +
-    item.nombre +
-    "\n" +
-    "Lote: " +
-    item.numeroLote +
-    "\n" +
-    "Cantidad devuelta: " +
-    cantidad +
-    "\n" +
-    "Valor devuelto: $" +
-    valorDevolucion.toLocaleString("es-CO")
-);
-
-  mostrarVentas();
 }
 
 // ==========================================
-// INICIAR VENTAS
+// INICIAR MÓDULO DE VENTAS
 // ==========================================
 
-cargarClientes();
+async function iniciarVentas() {
+  await cargarClientes();
 
-cargarProductos();
+  await cargarProductos();
 
-mostrarCarrito();
+  await cargarLotes();
 
-mostrarVentas();
+  mostrarCarrito();
+
+  await mostrarVentas();
+}
+
+iniciarVentas();

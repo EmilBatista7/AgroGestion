@@ -2,610 +2,601 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Inventario - AgroGestión</title>
-
-    <!-- Bootstrap -->
+    <title>Inventario | AgroGestión</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <!-- CSS principal -->
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        :root {
+            --agro-oscuro: #123c2b;
+            --agro-verde: #216b45;
+            --agro-claro: #eaf4ed;
+            --agro-dorado: #d8b56d;
+            --agro-texto: #24352c;
+            --agro-fondo: #f5f8f5
+        }
 
+        body.pagina-agro {
+            padding-top: 82px;
+            background: var(--agro-fondo);
+            color: var(--agro-texto)
+        }
+
+        .navbar-agro {
+            background: linear-gradient(110deg, #103725, #1c593b) !important;
+            box-shadow: 0 5px 22px #0c2b1c2e;
+            min-height: 72px
+        }
+
+        .navbar-agro .navbar-brand {
+            letter-spacing: .2px;
+            font-size: 1.25rem
+        }
+
+        .navbar-agro .navbar-brand i {
+            color: var(--agro-dorado)
+        }
+
+        .navbar-agro .nav-link {
+            color: #ffffffe0 !important;
+            border-radius: 8px;
+            padding: .55rem .65rem !important;
+            margin: .15rem;
+            font-size: .9rem;
+            transition: background .2s
+        }
+
+        .navbar-agro .nav-link:hover,
+        .navbar-agro .nav-link.active {
+            color: #fff !important;
+            background: #ffffff21
+        }
+
+        .navbar-agro .nav-link.active {
+            box-shadow: inset 0 -2px 0 var(--agro-dorado)
+        }
+
+        .usuario-sesion {
+            border-left: 1px solid #ffffff38;
+            padding-left: 1rem
+        }
+
+        .usuario-icono {
+            color: var(--agro-dorado)
+        }
+
+        .btn-cerrar-sesion {
+            border-color: #ffffffa6;
+            color: #fff;
+            border-radius: 8px
+        }
+
+        .btn-cerrar-sesion:hover {
+            color: var(--agro-oscuro);
+            background: #fff
+        }
+
+        .inventario-hero {
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            padding: 3.3rem 0;
+            background: linear-gradient(115deg, #103725fA, #216b45ed)
+        }
+
+        .inventario-hero:after {
+            content: "";
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 180px;
+            height: 180px;
+            border: 22px solid #ffffff0f;
+            border-radius: 42px;
+            rotate: 18deg;
+            pointer-events: none
+        }
+
+        .hero-contenido {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem
+        }
+
+        .inventario-etiqueta {
+            display: inline-block;
+            color: #f1d99e;
+            font-size: .75rem;
+            font-weight: 800;
+            letter-spacing: 1.7px;
+            margin-bottom: .7rem
+        }
+
+        .inventario-hero h1 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            margin-bottom: .65rem
+        }
+
+        .inventario-hero p {
+            color: #ffffffd4;
+            margin: 0;
+            max-width: 620px
+        }
+
+        .hero-icono {
+            width: 94px;
+            height: 94px;
+            flex: 0 0 94px;
+            display: grid;
+            place-items: center;
+            border: 1px solid #ffffff40;
+            border-radius: 24px;
+            background: #ffffff1a;
+            color: #f1d99e;
+            font-size: 2.6rem
+        }
+
+        .inventario-contenido {
+            padding-top: 2.2rem;
+            padding-bottom: 3.5rem
+        }
+
+        .resumen-inventario {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: #fff;
+            border: 1px solid #e5ece6;
+            border-radius: 16px;
+            box-shadow: 0 7px 22px #1437230b
+        }
+
+        .resumen-icon {
+            display: grid;
+            place-items: center;
+            width: 54px;
+            height: 54px;
+            flex: 0 0 54px;
+            border-radius: 15px;
+            background: var(--agro-claro);
+            color: var(--agro-verde);
+            font-size: 1.3rem
+        }
+
+        .resumen-inventario h6 {
+            margin: 0 0 .25rem;
+            font-size: 1rem;
+            font-weight: 750;
+            color: var(--agro-oscuro)
+        }
+
+        .resumen-inventario p {
+            color: #718076;
+            font-size: .87rem
+        }
+
+        .agro-panel {
+            overflow: hidden;
+            border: 1px solid #e3eae4;
+            border-radius: 17px;
+            background: #fff;
+            box-shadow: 0 8px 28px #1437230d
+        }
+
+        .agro-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.35rem 1.6rem;
+            border-bottom: 1px solid #e8eee9;
+            background: linear-gradient(180deg, #fff, #fbfdfb)
+        }
+
+        .panel-etiqueta {
+            display: block;
+            color: var(--agro-verde);
+            font-size: .7rem;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            margin-bottom: .35rem
+        }
+
+        .agro-panel-header h2 {
+            color: var(--agro-oscuro);
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 0
+        }
+
+        .agro-panel-header h2 i {
+            color: var(--agro-verde)
+        }
+
+        .agro-panel-header p {
+            color: #748178;
+            font-size: .9rem;
+            margin: .45rem 0 0
+        }
+
+        .agro-panel-body {
+            padding: 1.6rem
+        }
+
+        .form-label {
+            color: #34483a;
+            font-weight: 700;
+            font-size: .9rem;
+            margin-bottom: .55rem
+        }
+
+        .input-icon {
+            position: relative
+        }
+
+        .input-icon>i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            color: #6d8a76;
+            pointer-events: none
+        }
+
+        .input-icon .form-control,
+        .input-icon .form-select {
+            min-height: 46px;
+            padding-left: 2.45rem;
+            border-color: #dce6de;
+            border-radius: 10px;
+            background-color: #fff
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #76a98a;
+            box-shadow: 0 0 0 .2rem #216b451f
+        }
+
+        .btn-agro {
+            background: linear-gradient(110deg, #1c593b, #28784d);
+            color: #fff;
+            border: 0;
+            border-radius: 10px;
+            padding: .75rem 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 5px 13px #216b4529
+        }
+
+        .btn-agro:hover {
+            background: #15472f;
+            color: #fff;
+            transform: translateY(-1px)
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-start
+        }
+
+        .panel-icono {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            color: var(--agro-verde);
+            background: var(--agro-claro);
+            font-size: 1.2rem
+        }
+
+        .tabla-productos {
+            margin-bottom: 0;
+            min-width: 650px
+        }
+
+        .tabla-productos thead th {
+            background: #f0f6f1;
+            color: #31543d;
+            border-bottom: 1px solid #dce8de;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .45px;
+            padding: 1rem .9rem;
+            white-space: nowrap
+        }
+
+        .tabla-productos tbody td {
+            padding: .95rem .9rem;
+            border-color: #edf1ed;
+            color: #3c4b40;
+            font-size: .9rem
+        }
+
+        .tabla-productos tbody tr:hover {
+            background: #f8fbf8
+        }
+
+        .footer-agro {
+            color: #ffffffd1;
+            padding: 2.2rem 0 1.5rem;
+            background: linear-gradient(110deg, #103725, #1c593b);
+            border-top: 3px solid var(--agro-dorado)
+        }
+
+        .footer-logo {
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 800
+        }
+
+        .footer-logo i {
+            color: var(--agro-dorado)
+        }
+
+        .footer-agro p {
+            margin: .4rem 0;
+            font-size: .92rem
+        }
+
+        .footer-agro small {
+            color: #ffffffa6
+        }
+
+        @media(max-width:991.98px) {
+            body.pagina-agro {
+                padding-top: 72px
+            }
+
+            .navbar-agro .navbar-collapse {
+                padding: .75rem 0 1rem;
+                max-height: 75vh;
+                overflow-y: auto
+            }
+
+            .navbar-agro .nav-link {
+                margin: .1rem 0
+            }
+
+            .usuario-sesion {
+                border-left: 0;
+                border-top: 1px solid #ffffff33;
+                padding: 1rem 0 0;
+                margin-top: .5rem
+            }
+        }
+
+        @media(max-width:575.98px) {
+            .inventario-hero {
+                padding: 2.4rem 0
+            }
+
+            .hero-icono {
+                width: 64px;
+                height: 64px;
+                flex-basis: 64px;
+                border-radius: 18px;
+                font-size: 1.8rem
+            }
+
+            .agro-panel-header,
+            .agro-panel-body {
+                padding: 1.1rem
+            }
+
+            .resumen-inventario {
+                padding: 1rem
+            }
+
+            .form-actions .btn {
+                width: 100%
+            }
+        }
+    </style>
 </head>
 
-
 <body class="pagina-agro">
-
-
-    <!-- ==========================================
-        MENÚ PRINCIPAL
-    =========================================== -->
-
     <nav class="navbar navbar-expand-lg navbar-dark navbar-agro fixed-top">
-
         <div class="container">
-
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="../index.html">
-
-                <i class="fa-solid fa-leaf me-2"></i>
-
-                AgroGestión
-
-            </a>
-
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
-
-                <span class="navbar-toggler-icon"></span>
-
-            </button>
-
-
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="../index.html"><i
+                    class="fa-solid fa-leaf me-2"></i>AgroGestión</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar navegación"><span
+                    class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="menuPrincipal">
-
-                <ul class="navbar-nav ms-auto">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.html">
-                            Inicio
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="productos.html">
-                            Productos
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link active" href="inventario.html">
-                            Inventario
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ventas.html">
-                            Ventas
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="clientes.html">
-                            Clientes
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a id="menuProveedores" class="nav-link" href="proveedores.html">
-                            Proveedores
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="lotes.html">
-                            Lotes
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a id="menuCaja" class="nav-link" href="caja.html">
-                            Caja
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a id="menuReportes" class="nav-link" href="reportes.html">
-                            Reportes
-                        </a>
-                    </li>
-
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link" href="../index.html"><i
+                                class="fa-solid fa-house me-1"></i>Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="productos.html"><i
+                                class="fa-solid fa-flask me-1"></i>Productos</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="inventario.html"><i
+                                class="fa-solid fa-boxes-stacked me-1"></i>Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ventas.html"><i
+                                class="fa-solid fa-cart-shopping me-1"></i>Ventas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="clientes.html"><i
+                                class="fa-solid fa-users me-1"></i>Clientes</a></li>
+                    <li class="nav-item"><a id="menuProveedores" class="nav-link" href="proveedores.html"><i
+                                class="fa-solid fa-truck-field me-1"></i>Proveedores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="lotes.html"><i
+                                class="fa-solid fa-box-open me-1"></i>Lotes</a></li>
+                    <li class="nav-item"><a id="menuCaja" class="nav-link" href="caja.html"><i
+                                class="fa-solid fa-cash-register me-1"></i>Caja</a></li>
+                    <li class="nav-item"><a id="menuReportes" class="nav-link" href="reportes.html"><i
+                                class="fa-solid fa-chart-column me-1"></i>Reportes</a></li>
                 </ul>
-
+                <div class="usuario-sesion d-flex flex-column flex-lg-row align-items-lg-center gap-2 ms-lg-3">
+                    <span class="text-white"><i class="fa-solid fa-circle-user usuario-icono me-1"></i>Usuario: <strong
+                            id="usuarioActual"></strong></span>
+                    <button id="cerrarSesion" type="button" class="btn btn-sm btn-cerrar-sesion"><i
+                            class="fa-solid fa-right-from-bracket me-1"></i>Cerrar sesión</button>
+                </div>
             </div>
-
         </div>
-
     </nav>
 
-
-
-    <!-- ==========================================
-        ENCABEZADO
-    =========================================== -->
-
-    <header class="productos-header">
-
-        <div class="container productos-header-content">
-
+    <header class="inventario-hero">
+        <div class="container hero-contenido">
             <div>
-
-                <span class="productos-label">
-                    CONTROL DE INVENTARIO
-                </span>
-
-                <h1>
-                    Inventario
-                </h1>
-
-                <p>
-                    Controle las entradas, salidas y existencias
-                    de los productos del negocio.
-                </p>
-
+                <span class="inventario-etiqueta">CONTROL Y TRAZABILIDAD</span>
+                <h1><i class="fa-solid fa-boxes-stacked me-2"></i>Inventario</h1>
+                <p>Controle las entradas, salidas y existencias de los productos del negocio desde un solo lugar.</p>
             </div>
-
-
-            <div class="productos-header-icon">
-
-                <i class="fa-solid fa-boxes-stacked"></i>
-
-            </div>
-
+            <div class="hero-icono" aria-hidden="true"><i class="fa-solid fa-warehouse"></i></div>
         </div>
-
     </header>
 
-
-
-    <!-- ==========================================
-        CONTENIDO PRINCIPAL
-    =========================================== -->
-
-    <main class="container py-5">
-
-
-        <!-- ==========================================
-            RESUMEN
-        =========================================== -->
-
-        <div class="row g-4 mb-5">
-
-
-            <!-- Productos -->
-
+    <main class="container inventario-contenido">
+        <div class="row g-3 g-lg-4 mb-5">
             <div class="col-md-4">
-
-                <div class="producto-resumen">
-
-                    <div class="resumen-icon">
-
-                        <i class="fa-solid fa-box"></i>
-
-                    </div>
-
+                <div class="resumen-inventario">
+                    <div class="resumen-icon"><i class="fa-solid fa-box"></i></div>
                     <div>
-
                         <h6>Productos</h6>
-
-                        <p class="mb-0">
-                            Catálogo disponible
-                        </p>
-
+                        <p class="mb-0">Catálogo disponible</p>
                     </div>
-
                 </div>
-
             </div>
-
-
-            <!-- Movimientos -->
-
             <div class="col-md-4">
-
-                <div class="producto-resumen">
-
-                    <div class="resumen-icon">
-
-                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
-
-                    </div>
-
+                <div class="resumen-inventario">
+                    <div class="resumen-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
                     <div>
-
                         <h6>Movimientos</h6>
-
-                        <p class="mb-0">
-                            Entradas y salidas
-                        </p>
-
+                        <p class="mb-0">Entradas y salidas</p>
                     </div>
-
                 </div>
-
             </div>
-
-
-            <!-- Control -->
-
             <div class="col-md-4">
-
-                <div class="producto-resumen">
-
-                    <div class="resumen-icon">
-
-                        <i class="fa-solid fa-chart-simple"></i>
-
-                    </div>
-
+                <div class="resumen-inventario">
+                    <div class="resumen-icon"><i class="fa-solid fa-chart-line"></i></div>
                     <div>
-
                         <h6>Control</h6>
-
-                        <p class="mb-0">
-                            Seguimiento de existencias
-                        </p>
-
+                        <p class="mb-0">Seguimiento de existencias</p>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
-
-        <!-- ==========================================
-            REGISTRAR MOVIMIENTO
-        =========================================== -->
-
-        <section class="agro-panel mb-5">
-
-
+        <section class="agro-panel mb-4">
             <div class="agro-panel-header">
-
-                <div>
-
-                    <h2>
-                        <i class="fa-solid fa-right-left me-2"></i>
-                        Registrar movimiento
-                    </h2>
-
-                    <p>
-                        Registre entradas o salidas de productos.
-                    </p>
-
+                <div><span class="panel-etiqueta">NUEVO REGISTRO</span>
+                    <h2><i class="fa-solid fa-right-left me-2"></i>Registrar movimiento</h2>
+                    <p>Registre las entradas o salidas de productos y seleccione el lote correspondiente.</p>
                 </div>
-
+                <div class="panel-icono d-none d-sm-grid"><i class="fa-solid fa-clipboard-list"></i></div>
             </div>
-
-
             <div class="agro-panel-body">
-
-
                 <form id="formInventario">
-
-
                     <div class="row g-4">
-
-
-                        <!-- Producto -->
-
-                        <div class="col-md-4">
-
-                            <label for="producto" class="form-label">
-                                Producto
-                            </label>
-
-                            <div class="input-icon">
-
-                                <i class="fa-solid fa-box"></i>
-
-                                <select id="producto" class="form-select" required>
-
-                                    <option value="">
-                                        Seleccione un producto
-                                    </option>
-
-                                </select>
-
-                            </div>
-
+                        <div class="col-md-6 col-lg-4"><label for="producto" class="form-label">Producto</label>
+                            <div class="input-icon"><i class="fa-solid fa-box"></i><select id="producto"
+                                    class="form-select" required>
+                                    <option value="">Seleccione un producto</option>
+                                </select></div>
                         </div>
-
-
-                        <!-- Tipo -->
-                        
-                        <div class="col-md-4">
-                        
-                            <label for="tipoMovimiento" class="form-label">
-                                Tipo de movimiento
-                            </label>
-                        
-                            <div class="input-icon">
-                        
-                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
-                        
-                                <select id="tipoMovimiento" class="form-select" required>
-                        
-                                    <option value="">
-                                        Seleccione
-                                    </option>
-                        
-                                    <option value="Entrada">
-                                        Entrada
-                                    </option>
-                        
-                                    <option value="Salida">
-                                        Salida
-                                    </option>
-                        
-                                </select>
-                        
-                            </div>
-                        
+                        <div class="col-md-6 col-lg-4"><label for="tipoMovimiento" class="form-label">Tipo de
+                                movimiento</label>
+                            <div class="input-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i><select
+                                    id="tipoMovimiento" class="form-select" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Entrada">Entrada</option>
+                                    <option value="Salida">Salida</option>
+                                </select></div>
                         </div>
-                        
-                        
-                        <!-- Lote -->
-                        
-                        <div class="col-md-4">
-                        
-                            <label for="lote" class="form-label">
-                                Lote
-                            </label>
-                        
-                            <div class="input-icon">
-                        
-                                <i class="fa-solid fa-boxes-stacked"></i>
-                        
-                                <select id="lote" class="form-select" required>
-                        
-                                    <option value="">
-                                        Seleccione un lote
-                                    </option>
-                        
-                                </select>
-                        
-                            </div>
-                        
+                        <div class="col-md-6 col-lg-4"><label for="lote" class="form-label">Lote</label>
+                            <div class="input-icon"><i class="fa-solid fa-boxes-stacked"></i><select id="lote"
+                                    class="form-select" required>
+                                    <option value="">Seleccione un lote</option>
+                                </select></div>
                         </div>
-
-
-                        <!-- Cantidad -->
-
-                        <div class="col-md-4">
-
-                            <label for="cantidad" class="form-label">
-                                Cantidad
-                            </label>
-
-                            <div class="input-icon">
-
-                                <i class="fa-solid fa-hashtag"></i>
-
-                                <input type="number" id="cantidad" class="form-control" min="1" required>
-
-                            </div>
-
+                        <div class="col-md-6 col-lg-4"><label for="cantidad" class="form-label">Cantidad</label>
+                            <div class="input-icon"><i class="fa-solid fa-hashtag"></i><input type="number"
+                                    id="cantidad" class="form-control" min="1" step="1"
+                                    placeholder="Ingrese una cantidad" required></div>
                         </div>
-
                     </div>
-
-
-
-                    <!-- BOTÓN -->
-
-                    <div class="form-actions mt-4">
-
-                        <button type="submit" class="btn btn-agro">
-
-                            <i class="fa-solid fa-plus me-2"></i>
-
-                            Registrar movimiento
-
-                        </button>
-
-                    </div>
-
-
+                    <div class="form-actions mt-4"><button type="submit" class="btn btn-agro"><i
+                                class="fa-solid fa-plus me-2"></i>Registrar movimiento</button></div>
                 </form>
-
             </div>
-
         </section>
 
-
-
-        <!-- ==========================================
-            INVENTARIO ACTUAL
-        =========================================== -->
-
-        <section class="agro-panel mb-5">
-
-
+        <section class="agro-panel mb-4">
             <div class="agro-panel-header">
-
-                <div>
-
-                    <h2>
-                        <i class="fa-solid fa-boxes-stacked me-2"></i>
-                        Inventario actual
-                    </h2>
-
-                    <p>
-                        Consulte las existencias actuales de cada producto.
-                    </p>
-
+                <div><span class="panel-etiqueta">EXISTENCIAS</span>
+                    <h2><i class="fa-solid fa-boxes-stacked me-2"></i>Inventario actual</h2>
+                    <p>Consulte las existencias actuales y los niveles mínimos de cada producto.</p>
                 </div>
-
-
-                <div class="productos-header-icon small">
-
-                    <i class="fa-solid fa-warehouse"></i>
-
-                </div>
-
+                <div class="panel-icono d-none d-sm-grid"><i class="fa-solid fa-warehouse"></i></div>
             </div>
-
-
             <div class="agro-panel-body">
-
-
                 <div class="table-responsive">
-
                     <table class="table tabla-productos align-middle">
-
                         <thead>
-
                             <tr>
-
                                 <th>Código</th>
-
                                 <th>Producto</th>
-
                                 <th>Categoría</th>
-
                                 <th>Stock</th>
-
                                 <th>Stock mínimo</th>
-
                                 <th>Estado</th>
-
                             </tr>
-
                         </thead>
-
-
-                        <tbody id="tablaInventario">
-
-                        </tbody>
-
+                        <tbody id="tablaInventario"></tbody>
                     </table>
-
                 </div>
-
             </div>
-
         </section>
-
-
-
-        <!-- ==========================================
-            HISTORIAL DE MOVIMIENTOS
-        =========================================== -->
 
         <section class="agro-panel">
-
-
             <div class="agro-panel-header">
-
-                <div>
-
-                    <h2>
-                        <i class="fa-solid fa-clock-rotate-left me-2"></i>
-                        Historial de movimientos
-                    </h2>
-
-                    <p>
-                        Consulte las entradas y salidas registradas.
-                    </p>
-
+                <div><span class="panel-etiqueta">TRAZABILIDAD</span>
+                    <h2><i class="fa-solid fa-clock-rotate-left me-2"></i>Historial de movimientos</h2>
+                    <p>Revise las entradas y salidas registradas en el sistema.</p>
                 </div>
-
-
-                <div class="productos-header-icon small">
-
-                    <i class="fa-solid fa-list"></i>
-
-                </div>
-
+                <div class="panel-icono d-none d-sm-grid"><i class="fa-solid fa-list-check"></i></div>
             </div>
-
-
             <div class="agro-panel-body">
-
-
                 <div class="table-responsive">
-
                     <table class="table tabla-productos align-middle">
-
                         <thead>
-
                             <tr>
-
                                 <th>Fecha</th>
-
                                 <th>Producto</th>
-
                                 <th>Lote</th>
-
                                 <th>Movimiento</th>
-
                                 <th>Cantidad</th>
-
-                                
-
                             </tr>
-
                         </thead>
-
-
-                        <tbody id="tablaMovimientos">
-
-                        </tbody>
-
+                        <tbody id="tablaMovimientos"></tbody>
                     </table>
-
                 </div>
-
             </div>
-
         </section>
-
-
-    </main>
-
-
-
-    <!-- ==========================================
-        PIE DE PÁGINA
-    =========================================== -->
+    </main> 
 
     <footer class="footer-agro mt-5">
-
         <div class="container text-center">
-
-            <div class="mb-2">
-
-                <i class="fa-solid fa-leaf me-2"></i>
-
-                <strong>AgroGestión</strong>
-
-            </div>
-
-            <p class="mb-1">
-                Sistema de Gestión de Agroquímicos
-            </p>
-
-            <small>
-                SENA - Análisis y Desarrollo de Software - 2026
-            </small>
-
+            <div class="footer-logo mb-2"><i class="fa-solid fa-leaf me-2"></i>AgroGestión</div>
+            <p>Sistema de Gestión de Agroquímicos</p>
+            <small>SENA - Análisis y Desarrollo de Software - 2026</small>
         </div>
-
     </footer>
 
-
-
-    <!-- Bootstrap JS -->
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-    </script>
-
-
-    <!-- JavaScript del inventario -->
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/inventario.js"></script>
     <script src="../js/sesion.js"></script>
     <script src="../js/permisos.js"></script>
-
 </body>
 
 </html>

@@ -18,6 +18,459 @@
     <!-- CSS principal -->
     <link rel="stylesheet" href="../css/style.css">
 
+    <style>
+        :root {
+            --agro-verde-oscuro: #123d2b;
+            --agro-verde: #1f6b45;
+            --agro-verde-claro: #eaf4ed;
+            --agro-dorado: #d5a84f;
+            --agro-texto: #203329;
+            --agro-fondo: #f4f7f3;
+        }
+
+        body.pagina-agro {
+            padding-top: 78px;
+            background: var(--agro-fondo);
+            color: var(--agro-texto);
+        }
+
+        .navbar-agro {
+            min-height: 76px;
+            background: linear-gradient(110deg, #103b29, #1f6b45) !important;
+            box-shadow: 0 5px 22px rgba(16, 48, 32, .18);
+            border-bottom: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .navbar-agro .container-fluid {
+            gap: 1rem;
+        }
+
+        .navbar-agro .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            letter-spacing: .2px;
+        }
+
+        .marca-icono {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .13);
+            color: #e3c36f;
+            font-size: 1.15rem;
+        }
+
+        .navbar-agro .nav-link {
+            color: rgba(255, 255, 255, .84) !important;
+            font-size: .9rem;
+            padding: .65rem .7rem !important;
+            border-radius: 9px;
+            white-space: nowrap;
+            transition: background .2s ease, color .2s ease;
+        }
+
+        .navbar-agro .nav-link:hover,
+        .navbar-agro .nav-link.active {
+            color: #fff !important;
+            background: rgba(255, 255, 255, .13);
+        }
+
+        .sesion-nav {
+            padding-left: 1rem;
+            border-left: 1px solid rgba(255, 255, 255, .2);
+        }
+
+        .usuario-nav {
+            color: #fff;
+            font-size: .86rem;
+            white-space: nowrap;
+        }
+
+        .btn-cerrar-sesion {
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, .65);
+            border-radius: 9px;
+        }
+
+        .btn-cerrar-sesion:hover {
+            background: #fff;
+            color: var(--agro-verde-oscuro);
+        }
+
+        .productos-header {
+            position: relative;
+            overflow: hidden;
+            padding: 3.3rem 0;
+            color: #fff;
+            background: linear-gradient(115deg, rgba(16, 59, 41, .98), rgba(31, 107, 69, .93));
+        }
+
+        .productos-header::after {
+            content: "";
+            position: absolute;
+            width: 340px;
+            height: 340px;
+            right: 5%;
+            top: -175px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 50%;
+            box-shadow: 0 0 0 35px rgba(255, 255, 255, .035), 0 0 0 75px rgba(255, 255, 255, .025);
+            pointer-events: none;
+        }
+
+        .productos-header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .productos-label {
+            display: inline-block;
+            margin-bottom: .7rem;
+            color: #e5c66f;
+            font-size: .75rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .productos-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin: 0 0 .7rem;
+        }
+
+        .productos-header p {
+            max-width: 620px;
+            margin: 0;
+            color: rgba(255, 255, 255, .82);
+            line-height: 1.7;
+        }
+
+        .productos-header-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 116px;
+            height: 116px;
+            flex: 0 0 116px;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, .12);
+            color: #e5c66f;
+            font-size: 3.3rem;
+            border: 1px solid rgba(255, 255, 255, .16);
+        }
+
+        main.container {
+            max-width: 1440px;
+        }
+
+        .producto-resumen {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.35rem;
+            background: #fff;
+            border: 1px solid #e3ebe4;
+            border-radius: 17px;
+            box-shadow: 0 5px 18px rgba(24, 65, 42, .045);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .producto-resumen:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(24, 65, 42, .09);
+        }
+
+        .resumen-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 54px;
+            height: 54px;
+            border-radius: 15px;
+            background: var(--agro-verde-claro);
+            color: var(--agro-verde);
+            font-size: 1.35rem;
+        }
+
+        .producto-resumen small {
+            color: #758579;
+            font-size: .7rem;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+        }
+
+        .producto-resumen h4 {
+            margin: .18rem 0;
+            font-weight: 750;
+            font-size: 1.15rem;
+        }
+
+        .producto-resumen p {
+            margin: 0;
+            color: #748177;
+            font-size: .87rem;
+        }
+
+        .agro-panel {
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #e1e9e2;
+            border-radius: 18px;
+            box-shadow: 0 7px 24px rgba(24, 65, 42, .055);
+        }
+
+        .agro-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.25rem;
+            padding: 1.5rem 1.7rem;
+            background: linear-gradient(180deg, #fff, #fbfdfb);
+            border-bottom: 1px solid #e9eee9;
+        }
+
+        .agro-panel-header>div>span {
+            color: var(--agro-verde);
+            font-size: .7rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .agro-panel-header h3 {
+            margin: .35rem 0 0;
+            color: #203b2b;
+            font-size: 1.3rem;
+            font-weight: 750;
+        }
+
+        .agro-panel-body {
+            padding: 1.7rem;
+        }
+
+        .form-label {
+            color: #354b3c;
+            font-size: .9rem;
+            font-weight: 650;
+            margin-bottom: .5rem;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 45px;
+            border-color: #dbe5dc;
+            border-radius: 10px;
+            color: #24372b;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #68a47d;
+            box-shadow: 0 0 0 .2rem rgba(31, 107, 69, .12);
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon>i {
+            position: absolute;
+            z-index: 2;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #789080;
+        }
+
+        .input-icon .form-control {
+            padding-left: 40px;
+        }
+
+        .btn-agro {
+            padding: .75rem 1.2rem;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(110deg, #1f6b45, #2d8054);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(31, 107, 69, .16);
+        }
+
+        .btn-agro:hover {
+            background: #174e34;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .buscador-productos {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            min-width: min(300px, 100%);
+            padding: 0 .85rem;
+            border: 1px solid #dce6dd;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .buscador-productos i {
+            color: #6d8975;
+        }
+
+        .buscador-productos input {
+            width: 100%;
+            min-width: 0;
+            padding: .7rem 0;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: #24372b;
+        }
+
+        .tabla-productos {
+            margin: 0;
+        }
+
+        .tabla-productos thead th {
+            padding: 1rem .9rem;
+            background: #edf5ee;
+            color: #28553a;
+            border-bottom: 1px solid #dce9dd;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .45px;
+            white-space: nowrap;
+        }
+
+        .tabla-productos tbody td {
+            padding: .95rem .9rem;
+            border-color: #edf1ed;
+            color: #33463a;
+            font-size: .9rem;
+        }
+
+        .tabla-productos tbody tr:hover td {
+            background: #f8fbf8;
+        }
+
+        .footer-agro {
+            margin-top: 2rem;
+            padding: 2.6rem 1rem 1.8rem;
+            color: #fff;
+            background: linear-gradient(110deg, #103b29, #1f6b45);
+            border-top: 4px solid #d5a84f;
+        }
+
+        .footer-agro .footer-marca {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            margin-bottom: .7rem;
+            border-radius: 14px;
+            color: #e5c66f;
+            background: rgba(255, 255, 255, .12);
+            font-size: 1.35rem;
+        }
+
+        .footer-agro h5 {
+            margin-bottom: .4rem;
+            font-weight: 800;
+        }
+
+        .footer-agro p {
+            margin-bottom: .65rem;
+            color: rgba(255, 255, 255, .78);
+        }
+
+        .footer-agro small {
+            color: rgba(255, 255, 255, .65);
+        }
+
+        @media (max-width: 1199.98px) {
+            .navbar-agro .navbar-collapse {
+                padding: 1rem 0 .5rem;
+            }
+
+            .navbar-agro .nav-link {
+                padding: .65rem .8rem !important;
+            }
+
+            .sesion-nav {
+                padding: 1rem 0 0;
+                margin-top: .5rem;
+                border-left: 0;
+                border-top: 1px solid rgba(255, 255, 255, .2);
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            body.pagina-agro {
+                padding-top: 70px;
+            }
+
+            .navbar-agro {
+                min-height: 68px;
+            }
+
+            .productos-header {
+                padding: 2.4rem 0;
+            }
+
+            .productos-header-icon {
+                width: 76px;
+                height: 76px;
+                flex-basis: 76px;
+                border-radius: 20px;
+                font-size: 2.1rem;
+            }
+
+            .productos-header-content {
+                gap: 1rem;
+            }
+
+            .agro-panel-header {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 1.25rem;
+            }
+
+            .agro-panel-body {
+                padding: 1.25rem;
+            }
+
+            .buscador-productos {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .productos-header-icon {
+                display: none;
+            }
+
+            .productos-header h1 {
+                font-size: 2rem;
+            }
+
+            main.container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+    </style>
+
+
 </head>
 
 
@@ -28,104 +481,50 @@
         MENÚ
     ================================== -->
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-agro fixed-top">
-
-
-        <div class="d-flex align-items-center ms-auto">
-
-            <span class="me-3">
-                Usuario:
-                <strong id="usuarioActual"></strong>
-            </span>
-
-            <button id="cerrarSesion" class="btn btn-outline-danger btn-sm">
-                Cerrar sesión
-            </button>
-
-        </div>
-
-        <div class="container">
-
+    <!-- MENÚ SUPERIOR -->
+    <nav class="navbar navbar-expand-xl navbar-dark navbar-agro fixed-top">
+        <div class="container-fluid px-3 px-xl-4">
             <a class="navbar-brand fw-bold" href="../index.html">
-
-                <i class="fa-solid fa-leaf me-2"></i>
-
-                AgroGestión
-
+                <span class="marca-icono"><i class="fa-solid fa-leaf"></i></span>
+                <span>AgroGestión</span>
             </a>
 
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
-
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
+                aria-controls="menu" aria-expanded="false" aria-label="Mostrar navegación">
                 <span class="navbar-toggler-icon"></span>
-
             </button>
 
-
             <div class="collapse navbar-collapse" id="menu">
-
-                <ul class="navbar-nav ms-auto">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.html">
-                            Inicio
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link active" href="productos.html">
-                            Productos
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="inventario.html">
-                            Inventario
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="ventas.html">
-                            Ventas
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="clientes.html">
-                            Clientes
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a id="menuProveedores" class="nav-link" href="proveedores.html">
-                            Proveedores
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="lotes.html">
-                            Lotes
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a id="menuCaja" class="nav-link" href="caja.html">
-                            Caja
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a id="menuReportes" class="nav-link" href="reportes.html">
-                            Reportes
-                        </a>
-                    </li>
-
+                <ul class="navbar-nav mx-xl-auto mb-3 mb-xl-0">
+                    <li class="nav-item"><a class="nav-link" href="../index.html"><i
+                                class="fa-solid fa-house me-1"></i>Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="productos.html"><i
+                                class="fa-solid fa-flask me-1"></i>Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="inventario.html"><i
+                                class="fa-solid fa-boxes-stacked me-1"></i>Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ventas.html"><i
+                                class="fa-solid fa-cart-shopping me-1"></i>Ventas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="clientes.html"><i
+                                class="fa-solid fa-users me-1"></i>Clientes</a></li>
+                    <li class="nav-item"><a id="menuProveedores" class="nav-link" href="proveedores.html"><i
+                                class="fa-solid fa-truck-field me-1"></i>Proveedores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="lotes.html"><i
+                                class="fa-solid fa-box-open me-1"></i>Lotes</a></li>
+                    <li class="nav-item"><a id="menuCaja" class="nav-link" href="caja.html"><i
+                                class="fa-solid fa-cash-register me-1"></i>Caja</a></li>
+                    <li class="nav-item"><a id="menuReportes" class="nav-link" href="reportes.html"><i
+                                class="fa-solid fa-chart-column me-1"></i>Reportes</a></li>
                 </ul>
 
+                <div class="sesion-nav d-flex flex-column flex-xl-row align-items-xl-center gap-2">
+                    <span class="usuario-nav"><i class="fa-solid fa-circle-user me-1"></i>Usuario: <strong
+                            id="usuarioActual"></strong></span>
+                    <button id="cerrarSesion" type="button" class="btn btn-cerrar-sesion btn-sm">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i>Cerrar sesión
+                    </button>
+                </div>
             </div>
-
         </div>
-
     </nav>
 
 
@@ -616,29 +1015,16 @@
 
 
     <!-- =================================
-         FOOTER
+        FOOTER
     ================================== -->
 
     <footer class="footer-agro">
-
         <div class="container text-center">
-
-            <i class="fa-solid fa-leaf mb-2"></i>
-
-            <h5>
-                AgroGestión
-            </h5>
-
-            <p>
-                Sistema de Gestión de Agroquímicos
-            </p>
-
-            <small>
-                SENA - Análisis y Desarrollo de Software - 2026
-            </small>
-
+            <div class="footer-marca"><i class="fa-solid fa-leaf"></i></div>
+            <h5>AgroGestión</h5>
+            <p>Sistema de Gestión de Agroquímicos</p>
+            <small>SENA · Análisis y Desarrollo de Software · 2026</small>
         </div>
-
     </footer>
 
 

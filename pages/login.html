@@ -2,83 +2,516 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Iniciar sesión - AgroGestión</title>
+    <title>Iniciar sesión | AgroGestión</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+    <style>
+        :root {
+            --verde-oscuro: #153d2b;
+            --verde: #267448;
+            --verde-claro: #e9f2e9;
+            --texto: #24352b;
+            --gris: #748176;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f3f6f2;
+            color: var(--texto);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .login-contenedor {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px 20px;
+        }
+
+        .login-panel {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 590px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: white;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 22px 65px rgba(24, 54, 35, 0.12);
+        }
+
+        /* Panel de identidad */
+
+        .login-presentacion {
+            background:
+                radial-gradient(circle at 90% 10%,
+                    rgba(126, 177, 116, 0.20),
+                    transparent 35%),
+                linear-gradient(145deg, #1e5037, #102f22);
+            color: white;
+            padding: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .marca-icono {
+            width: 49px;
+            height: 49px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            color: #d6ebd2;
+        }
+
+        .marca h1 {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: -0.7px;
+        }
+
+        .marca p {
+            margin: 3px 0 0;
+            color: #c2d8c8;
+            font-size: 12px;
+        }
+
+        .presentacion-contenido {
+            position: relative;
+            z-index: 1;
+            margin: 45px 0;
+        }
+
+        .etiqueta {
+            color: #b9d9bd;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 19px;
+        }
+
+        .presentacion-contenido h2 {
+            font-size: clamp(30px, 3vw, 42px);
+            font-weight: 700;
+            line-height: 1.18;
+            letter-spacing: -1.3px;
+            margin-bottom: 20px;
+        }
+
+        .presentacion-contenido p {
+            color: #d0e0d3;
+            line-height: 1.8;
+            font-size: 14px;
+            max-width: 350px;
+        }
+
+        .caracteristicas {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .caracteristica {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e0ece1;
+            font-size: 13px;
+        }
+
+        .caracteristica i {
+            color: #b9d9bd;
+            width: 18px;
+        }
+
+        .login-pie {
+            color: #b8cdbd;
+            font-size: 11px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .decoracion {
+            position: absolute;
+            right: -70px;
+            bottom: 100px;
+            font-size: 260px;
+            color: rgba(255, 255, 255, 0.035);
+            transform: rotate(-20deg);
+            pointer-events: none;
+        }
+
+        /* Formulario */
+
+        .login-formulario {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 55px 50px;
+        }
+
+        .formulario-encabezado {
+            margin-bottom: 35px;
+        }
+
+        .formulario-encabezado h2 {
+            font-size: 29px;
+            font-weight: 700;
+            letter-spacing: -0.8px;
+            margin-bottom: 10px;
+        }
+
+        .formulario-encabezado p {
+            color: var(--gris);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+            color: #34463a;
+        }
+
+        .campo-login {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #dce4dd;
+            border-radius: 11px;
+            padding: 0 15px;
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .campo-login:focus-within {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 3px rgba(38, 116, 72, 0.10);
+        }
+
+        .campo-login>i {
+            color: #829087;
+            font-size: 15px;
+        }
+
+        .campo-login input {
+            width: 100%;
+            min-width: 0;
+            height: 49px;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--texto);
+            font-size: 14px;
+        }
+
+        .campo-login input::placeholder {
+            color: #a0aaa2;
+        }
+
+        .mostrar-contrasena {
+            background: transparent;
+            border: none;
+            color: #7d8b80;
+            padding: 7px 0 7px 7px;
+            cursor: pointer;
+        }
+
+        .boton-login {
+            width: 100%;
+            min-height: 50px;
+            border: none;
+            border-radius: 11px;
+            background: var(--verde);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .boton-login:hover {
+            background: #1c5d38;
+            transform: translateY(-1px);
+        }
+
+        .boton-login:focus-visible {
+            outline: 3px solid #9ccbaa;
+            outline-offset: 3px;
+        }
+
+        #mensaje:empty {
+            display: none;
+        }
+
+        #mensaje {
+            font-size: 13px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .formulario-pie {
+            border-top: 1px solid #edf0ed;
+            margin-top: 35px;
+            padding-top: 20px;
+            text-align: center;
+            color: #879289;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .formulario-pie strong {
+            color: #526357;
+        }
+
+        /* Adaptación a móviles */
+
+        @media (max-width: 768px) {
+            .login-contenedor {
+                padding: 18px 12px;
+            }
+
+            .login-panel {
+                max-width: 470px;
+                grid-template-columns: 1fr;
+                min-height: auto;
+                border-radius: 18px;
+            }
+
+            .login-presentacion {
+                padding: 27px;
+            }
+
+            .presentacion-contenido {
+                margin: 30px 0 15px;
+            }
+
+            .presentacion-contenido h2 {
+                font-size: 29px;
+            }
+
+            .presentacion-contenido p {
+                margin-bottom: 0;
+            }
+
+            .caracteristicas,
+            .login-pie,
+            .decoracion {
+                display: none;
+            }
+
+            .login-formulario {
+                padding: 32px 27px;
+            }
+
+            .formulario-encabezado {
+                margin-bottom: 25px;
+            }
+
+            .formulario-encabezado h2 {
+                font-size: 25px;
+            }
+
+            .formulario-pie {
+                margin-top: 25px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
 
-<body class="pagina-agro">
+<body>
 
-    <div class="container">
+    <main class="login-contenedor">
 
-        <div class="row justify-content-center align-items-center min-vh-100">
+        <section class="login-panel">
 
-            <div class="col-md-5">
+            <!-- Panel izquierdo -->
 
-                <div class="card shadow p-4">
+            <div class="login-presentacion">
 
-                    <div class="text-center mb-4">
+                <div class="marca">
+                    <div class="marca-icono">
+                        <i class="fa-solid fa-leaf" aria-hidden="true"></i>
+                    </div>
 
-                        <h2>
-                            AgroGestión
-                        </h2>
+                    <div>
+                        <h1>AgroGestión</h1>
+                        <p>Sistema de Gestión de Agroquímicos</p>
+                    </div>
+                </div>
 
-                        <p class="text-muted">
-                            Sistema de Gestión de Agroquímicos
-                        </p>
+                <div class="presentacion-contenido">
+
+                    <div class="etiqueta">
+                        Gestión agrícola inteligente
+                    </div>
+
+                    <h2>
+                        Tu negocio agrícola, bajo control.
+                    </h2>
+
+                    <p>
+                        Administra tus productos, controla el inventario
+                        y gestiona tus operaciones desde una sola plataforma.
+                    </p>
+
+                    <div class="caracteristicas">
+
+                        <div class="caracteristica">
+                            <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
+                            <span>Control de productos e inventario</span>
+                        </div>
+
+                        <div class="caracteristica">
+                            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                            <span>Seguimiento de ventas y operaciones</span>
+                        </div>
+
+                        <div class="caracteristica">
+                            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                            <span>Acceso según tu usuario</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="login-pie">
+                    Una herramienta para trabajar con más organización.
+                </div>
+
+                <i class="fa-solid fa-leaf decoracion" aria-hidden="true"></i>
+
+            </div>
+
+            <!-- Panel derecho -->
+
+            <div class="login-formulario">
+
+                <div class="formulario-encabezado">
+                    <h2>Iniciar sesión</h2>
+                    <p>Ingresa tus credenciales para continuar.</p>
+                </div>
+
+                <form id="formLogin">
+
+                    <div class="mb-4">
+
+                        <label for="usuario" class="form-label">
+                            Usuario
+                        </label>
+
+                        <div class="campo-login">
+                            <i class="fa-regular fa-user" aria-hidden="true"></i>
+
+                            <input type="text" id="usuario" name="usuario" placeholder="Escribe tu usuario"
+                                autocomplete="username" required>
+                        </div>
 
                     </div>
 
+                    <div class="mb-4">
 
-                    <form id="formLogin">
+                        <label for="contrasena" class="form-label">
+                            Contraseña
+                        </label>
 
-                        <div class="mb-3">
+                        <div class="campo-login">
+                            <i class="fa-solid fa-lock" aria-hidden="true"></i>
 
-                            <label for="usuario" class="form-label">
-                                Usuario
-                            </label>
+                            <input type="password" id="contrasena" name="contrasena" placeholder="Escribe tu contraseña"
+                                autocomplete="current-password" required>
 
-                            <input type="text" id="usuario" class="form-control" required>
+                            <button type="button" id="mostrarContrasena" class="mostrar-contrasena"
+                                aria-label="Mostrar contraseña" aria-pressed="false">
 
+                                <i class="fa-regular fa-eye" aria-hidden="true"></i>
+
+                            </button>
                         </div>
 
+                    </div>
 
-                        <div class="mb-3">
+                    <div id="mensaje" class="mb-3 text-center" role="status" aria-live="polite">
+                    </div>
 
-                            <label for="contrasena" class="form-label">
-                                Contraseña
-                            </label>
+                    <button type="submit" class="boton-login">
+                        Iniciar sesión
+                        <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+                    </button>
 
-                            <input type="password" id="contrasena" class="form-control" required>
+                </form>
 
-                        </div>
-
-
-                        <div id="mensaje" class="mb-3 text-center"></div>
-
-
-                        <button type="submit" class="btn btn-success w-100">
-                            Iniciar sesión
-                        </button>
-
-                    </form>
-
+                <div class="formulario-pie">
+                    <strong>AgroGestión</strong><br>
+                    SENA · Análisis y Desarrollo de Software · 2026
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
-    </div>
+    </main>
 
+    <script>
+        const campoContrasena = document.getElementById("contrasena");
+        const botonMostrar = document.getElementById("mostrarContrasena");
+
+        botonMostrar.addEventListener("click", function () {
+            const mostrar = campoContrasena.type === "password";
+
+            campoContrasena.type = mostrar ? "text" : "password";
+
+            botonMostrar.setAttribute("aria-pressed", String(mostrar));
+
+            botonMostrar.setAttribute(
+                "aria-label",
+                mostrar ? "Ocultar contraseña" : "Mostrar contraseña"
+            );
+
+            botonMostrar.innerHTML = mostrar
+                ? '<i class="fa-regular fa-eye-slash" aria-hidden="true"></i>'
+                : '<i class="fa-regular fa-eye" aria-hidden="true"></i>';
+        });
+    </script>
 
     <script src="../js/login.js"></script>
 
