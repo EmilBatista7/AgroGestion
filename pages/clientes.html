@@ -643,21 +643,27 @@
         </div>
     </footer>
 
+    <script src="../js/api.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/clientes.js"></script>
     <script src="../js/sesion.js"></script>
     <script src="../js/permisos.js"></script>
     <script>
-        // Muestra el nombre guardado en la sesión, si existe.
         document.addEventListener("DOMContentLoaded", function () {
-            try {
-                const usuarioGuardado = JSON.parse(sessionStorage.getItem("usuarioActual") || "null");
-                const nombre = usuarioGuardado && (usuarioGuardado.nombre || usuarioGuardado.usuario || usuarioGuardado.nombreUsuario);
-                const etiqueta = document.getElementById("nombreUsuario");
-                if (etiqueta && nombre) etiqueta.textContent = nombre;
-            } catch (error) {
-                console.warn("No se pudo leer el nombre de la sesión.", error);
+
+            const usuarioGuardado = JSON.parse(
+                localStorage.getItem("usuarioActual") || "null"
+            );
+
+            const nombre = usuarioGuardado &&
+                (usuarioGuardado.nombre || usuarioGuardado.usuario);
+
+            const etiqueta = document.getElementById("nombreUsuario");
+
+            if (etiqueta && nombre) {
+                etiqueta.textContent = nombre;
             }
+
         });
     </script>
 </body>

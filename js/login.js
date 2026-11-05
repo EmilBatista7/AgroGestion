@@ -1,51 +1,46 @@
 // ==========================================
-// USUARIOS DEL SISTEMA
-// ==========================================
-
-const usuarios = [
-  {
-    usuario: "jefe",
-    contrasena: "1234",
-    rol: "jefe",
-  },
-  {
-    usuario: "empleado",
-    contrasena: "1234",
-    rol: "empleado",
-  },
-];
-
-// ==========================================
 // FORMULARIO DE LOGIN
 // ==========================================
 
 const formulario = document.getElementById("formLogin");
-
 const mensaje = document.getElementById("mensaje");
 
 // ==========================================
 // INICIAR SESIÓN
 // ==========================================
 
-formulario.addEventListener("submit", function (evento) {
+formulario.addEventListener("submit", async function (evento) {
   evento.preventDefault();
 
   const usuario = document.getElementById("usuario").value.trim();
-
   const contrasena = document.getElementById("contrasena").value.trim();
 
-  // Buscar usuario
-  const usuarioEncontrado = usuarios.find(function (item) {
-    return item.usuario === usuario && item.contrasena === contrasena;
-  });
+  try {
+    const respuesta = await fetch("http://127.0.0.1:5001/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        usuario: usuario,
+        contrasena: contrasena,
+      }),
+    });
 
-  // ==========================================
-  // USUARIO CORRECTO
-  // ==========================================
+    const datos = await respuesta.json();
 
-  if (usuarioEncontrado) {
-    // Guardar sesión
-    localStorage.setItem("usuarioActual", JSON.stringify(usuarioEncontrado));
+    if (!respuesta.ok) {
+      mensaje.innerHTML = `
+                <div class="alert alert-danger">
+                    ${datos.mensaje}
+                </div>
+            `;
+      return;
+    }
+
+    // Guardar los datos del usuario en la sesión
+    localStorage.setItem("token", datos.token);
+    localStorage.setItem("usuarioActual", JSON.stringify(datos.usuario));
 
     mensaje.innerHTML = `
             <div class="alert alert-success">
@@ -53,18 +48,15 @@ formulario.addEventListener("submit", function (evento) {
             </div>
         `;
 
-    // Ir al inicio
     setTimeout(function () {
       window.location.href = "../index.html";
     }, 500);
-  } else {
-    // ==========================================
-    // USUARIO INCORRECTO
-    // ==========================================
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error);
 
     mensaje.innerHTML = `
             <div class="alert alert-danger">
-                Usuario o contraseña incorrectos.
+                No se pudo conectar con el servidor.
             </div>
         `;
   }

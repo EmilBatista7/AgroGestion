@@ -1,9 +1,93 @@
-
 from flask import Flask, jsonify, request
 import mysql.connector
 from mysql.connector import Error
+from werkzeug.security import check_password_hash
+from itsdangerous import URLSafeTimedSerializer
+import os
+from functools import wraps
 
 app = Flask(__name__)
+
+
+# ==========================================
+# CONFIGURACIÓN DE SEGURIDAD
+# ==========================================
+
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "clave-desarrollo-agrogestion-cambiar-en-produccion"
+)
+
+# Crear herramienta para generar y verificar tokens
+serializador = URLSafeTimedSerializer(
+    app.config["SECRET_KEY"],
+    salt="agrogestion-auth"
+)
+
+
+# ==========================================
+# VERIFICAR TOKEN DEL USUARIO
+# ==========================================
+
+def requiere_autenticacion(funcion):
+
+    @wraps(funcion)
+    def decorada(*args, **kwargs):
+
+        autorizacion = request.headers.get("Authorization", "")
+
+        if not autorizacion.startswith("Bearer "):
+            return jsonify({
+                "error": "Debes iniciar sesión."
+            }), 401
+
+        token = autorizacion.split(" ", 1)[1]
+
+        try:
+            usuario = serializador.loads(
+                token,
+                max_age=28800
+            )
+
+            request.usuario = usuario
+
+        except SignatureExpired:
+            return jsonify({
+                "error": "La sesión ha expirado. Inicia sesión nuevamente."
+            }), 401
+
+        except BadSignature:
+            return jsonify({
+                "error": "Token de sesión no válido."
+            }), 401
+
+        return funcion(*args, **kwargs)
+
+    return decorada
+
+
+# ==========================================
+# VERIFICAR PERMISOS DE JEFE
+# ==========================================
+
+def requiere_rol(rol_requerido):
+
+    def decorador(funcion):
+
+        @wraps(funcion)
+        @requiere_autenticacion
+        def decorada(*args, **kwargs):
+
+            if request.usuario.get("rol") != rol_requerido:
+                return jsonify({
+                    "error": "No tienes permisos para realizar esta operación."
+                }), 403
+
+            return funcion(*args, **kwargs)
+
+        return decorada
+
+    return decorador
 
 
 # ==========================================
@@ -32,11 +116,75 @@ def conectar_bd():
 @app.after_request
 def permitir_cors(respuesta):
     respuesta.headers["Access-Control-Allow-Origin"] = "*"
-    respuesta.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    respuesta.headers["Access-Control-Allow-Headers"] = (
+    "Content-Type, Authorization"
+)
     respuesta.headers["Access-Control-Allow-Methods"] = (
         "GET, POST, PUT, DELETE, OPTIONS"
     )
     return respuesta
+
+
+# ==========================================
+# VERIFICAR TOKEN DE AUTENTICACIÓN
+# ==========================================
+
+def requiere_token(funcion):
+
+    @wraps(funcion)
+    def decorador(*args, **kwargs):
+
+        autorizacion = request.headers.get("Authorization")
+
+        if not autorizacion or not autorizacion.startswith("Bearer "):
+            return jsonify({
+                "mensaje": "No estás autorizado. Debes iniciar sesión."
+            }), 401
+
+        token = autorizacion.split(" ", 1)[1]
+
+        try:
+            datos_token = URLSafeTimedSerializer(
+                app.config["SECRET_KEY"]
+            ).loads(token, max_age=28800)
+
+            request.usuario = datos_token
+
+        except Exception:
+            return jsonify({
+                "mensaje": "El token es inválido o ha expirado."
+            }), 401
+
+        return funcion(*args, **kwargs)
+
+    return decorador
+
+
+
+# ==========================================
+# VERIFICAR PERMISOS SEGÚN EL ROL
+# ==========================================
+
+def requiere_rol(*roles_permitidos):
+
+    def decorador(funcion):
+
+        @wraps(funcion)
+        def verificar_permiso(*args, **kwargs):
+
+            rol = request.usuario.get("rol")
+
+            if rol not in roles_permitidos:
+                return jsonify({
+                    "mensaje": "No tienes permisos para realizar esta operación."
+                }), 403
+
+            return funcion(*args, **kwargs)
+
+        return verificar_permiso
+
+    return decorador
+
 
 
 # ==========================================
@@ -79,6 +227,8 @@ def estado():
 # ==========================================
 
 @app.route("/api/productos", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def listar_productos():
     conexion = conectar_bd()
 
@@ -123,6 +273,8 @@ def listar_productos():
 # ==========================================
 
 @app.route("/api/productos", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def registrar_producto():
     datos = request.get_json(silent=True)
 
@@ -216,6 +368,8 @@ def registrar_producto():
 # ==========================================
 
 @app.route("/api/productos/<int:id>", methods=["PUT"])
+@requiere_token
+@requiere_rol("jefe")
 def actualizar_producto(id):
     datos = request.get_json(silent=True)
 
@@ -327,6 +481,8 @@ def actualizar_producto(id):
 # ==========================================
 
 @app.route("/api/productos/<int:id>", methods=["DELETE"])
+@requiere_token
+@requiere_rol("jefe")
 def eliminar_producto(id):
     conexion = conectar_bd()
 
@@ -387,6 +543,8 @@ def eliminar_producto(id):
 # ==========================================
 
 @app.route("/api/clientes", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def obtener_clientes():
     conexion = conectar_bd()
 
@@ -398,7 +556,7 @@ def obtener_clientes():
 
         cursor.execute("""
             SELECT id, documento, nombre, telefono, correo,
-                   direccion, tipo, estado
+                direccion, tipo, estado
             FROM clientes
             ORDER BY id DESC
         """)
@@ -415,6 +573,8 @@ def obtener_clientes():
 
 
 @app.route("/api/clientes", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def registrar_cliente():
     datos = request.get_json()
 
@@ -452,7 +612,7 @@ def registrar_cliente():
             (documento, nombre, telefono, correo, direccion, tipo, estado)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (documento, nombre, telefono, correo,
-              direccion, tipo, estado))
+            direccion, tipo, estado))
 
         conexion.commit()
 
@@ -476,6 +636,8 @@ def registrar_cliente():
 
 
 @app.route("/api/clientes/<int:id>", methods=["PUT"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def actualizar_cliente(id):
     datos = request.get_json()
 
@@ -519,7 +681,7 @@ def actualizar_cliente(id):
                 estado = %s
             WHERE id = %s
         """, (documento, nombre, telefono, correo,
-              direccion, tipo, estado, id))
+            direccion, tipo, estado, id))
 
         if cursor.rowcount == 0:
             cursor.execute(
@@ -554,6 +716,8 @@ def actualizar_cliente(id):
 # ==========================================
 
 @app.route("/api/clientes/<int:id>", methods=["DELETE"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def eliminar_cliente(id):
     conexion = conectar_bd()
 
@@ -599,6 +763,8 @@ def eliminar_cliente(id):
 # CONSULTAR PROVEEDORES
 
 @app.route("/api/proveedores", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def obtener_proveedores():
     conexion = conectar_bd()
 
@@ -641,6 +807,8 @@ def obtener_proveedores():
 # REGISTRAR PROVEEDOR
 
 @app.route("/api/proveedores", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe")
 def registrar_proveedor():
     datos = request.get_json(silent=True)
 
@@ -704,6 +872,8 @@ def registrar_proveedor():
 # ACTUALIZAR PROVEEDOR
 
 @app.route("/api/proveedores/<int:id>", methods=["PUT"])
+@requiere_token
+@requiere_rol("jefe")
 def actualizar_proveedor(id):
     datos = request.get_json(silent=True)
 
@@ -782,6 +952,8 @@ def actualizar_proveedor(id):
 # ELIMINAR PROVEEDOR
 
 @app.route("/api/proveedores/<int:id>", methods=["DELETE"])
+@requiere_token
+@requiere_rol("jefe")
 def eliminar_proveedor(id):
     conexion = conectar_bd()
 
@@ -831,6 +1003,8 @@ def eliminar_proveedor(id):
 
 # CONSULTAR LOTES
 @app.route("/api/lotes", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def obtener_lotes():
     conexion = conectar_bd()
 
@@ -880,6 +1054,8 @@ def obtener_lotes():
 
 # REGISTRAR LOTE
 @app.route("/api/lotes", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def registrar_lote():
     datos = request.get_json()
 
@@ -974,6 +1150,8 @@ def registrar_lote():
 
 # ELIMINAR LOTE
 @app.route("/api/lotes/<int:id>", methods=["DELETE"])
+@requiere_token
+@requiere_rol("jefe")
 def eliminar_lote(id):
     conexion = conectar_bd()
 
@@ -1014,6 +1192,8 @@ def eliminar_lote(id):
 
 # CONSULTAR HISTORIAL DE MOVIMIENTOS
 @app.route("/api/movimientos-inventario", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def obtener_movimientos_inventario():
     conexion = conectar_bd()
 
@@ -1062,6 +1242,8 @@ def obtener_movimientos_inventario():
 
 # REGISTRAR ENTRADA O SALIDA
 @app.route("/api/movimientos-inventario", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def registrar_movimiento_inventario():
     datos = request.get_json()
 
@@ -1215,6 +1397,8 @@ def registrar_movimiento_inventario():
 # CONSULTAR HISTORIAL DE VENTAS
 
 @app.route("/api/ventas", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def obtener_ventas():
     conexion = conectar_bd()
 
@@ -1263,6 +1447,8 @@ def obtener_ventas():
 # CONSULTAR DETALLE DE UNA VENTA
 
 @app.route("/api/ventas/<int:id>", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def obtener_detalle_venta(id):
     conexion = conectar_bd()
 
@@ -1340,6 +1526,8 @@ def obtener_detalle_venta(id):
 # REGISTRAR UNA VENTA
 
 @app.route("/api/ventas", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def registrar_venta():
     datos = request.get_json(silent=True)
 
@@ -1641,6 +1829,8 @@ def registrar_venta():
 # ==========================================
 
 @app.route("/api/ventas/<int:id>/devoluciones", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def registrar_devolucion(id):
     datos = request.get_json(silent=True)
 
@@ -1857,6 +2047,8 @@ def registrar_devolucion(id):
 # ==========================================
 
 @app.route("/api/movimientos-caja", methods=["GET"])
+@requiere_token
+@requiere_rol("jefe", "empleado")
 def obtener_movimientos_caja():
     conexion = conectar_bd()
 
@@ -1904,6 +2096,8 @@ def obtener_movimientos_caja():
 # ==========================================
 
 @app.route("/api/movimientos-caja", methods=["POST"])
+@requiere_token
+@requiere_rol("jefe")
 def registrar_movimiento_caja():
     datos = request.get_json()
 
@@ -1963,9 +2157,109 @@ def registrar_movimiento_caja():
         conexion.close()
 
 
+
+
+
+@app.route("/api/login", methods=["POST"])
+def iniciar_sesion():
+    datos = request.get_json(silent=True) or {}
+
+    usuario = datos.get("usuario", "").strip()
+    contrasena = datos.get("contrasena", "")
+
+    if not usuario or not contrasena:
+        return jsonify({
+            "mensaje": "Debes ingresar usuario y contraseña."
+        }), 400
+
+    conexion = conectar_bd()
+
+    if conexion is None:
+        return jsonify({
+            "mensaje": "No fue posible conectar con la base de datos."
+        }), 500
+
+    cursor = None
+
+    try:
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT id, nombre, usuario, clave, rol, estado
+            FROM usuarios
+            WHERE usuario = %s
+        """, (usuario,))
+
+        resultado = cursor.fetchone()
+
+        if resultado is None:
+            return jsonify({
+                "mensaje": "Usuario o contraseña incorrectos."
+            }), 401
+
+        id_usuario, nombre, usuario_db, clave_hash, rol, estado = resultado
+
+        if estado != "Activo":
+            return jsonify({
+                "mensaje": "Este usuario se encuentra inactivo."
+            }), 403
+
+        if not check_password_hash(clave_hash, contrasena):
+            return jsonify({
+                "mensaje": "Usuario o contraseña incorrectos."
+            }), 401
+
+                # Generar token de autenticación
+        token = serializador.dumps({
+            "id": id_usuario,
+            "usuario": usuario_db,
+            "rol": rol
+        })
+
+        token = URLSafeTimedSerializer(
+    app.config["SECRET_KEY"]
+).dumps({
+    "id": id_usuario,
+    "usuario": usuario_db,
+    "rol": rol
+})
+        
+        return jsonify({
+            "mensaje": "Inicio de sesión correcto.",
+            "token": token,
+            "usuario": {
+                "id": id_usuario,
+                "nombre": nombre,
+                "usuario": usuario_db,
+                "rol": rol
+            }
+        }), 200
+
+    except Error as error:
+        print("Error en el inicio de sesión:", error)
+
+        return jsonify({
+            "mensaje": "Ocurrió un error al iniciar sesión."
+        }), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        conexion.close()
+
+
+
+
 if __name__ == "__main__":
     app.run(
         host="127.0.0.1",
         port=5001,
         debug=True
     )
+
+
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "4efed7af1f037b0d8a655d2e5230545507bb5f24dbc8cb1b2009a60837b7352c"
+)

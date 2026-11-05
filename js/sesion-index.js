@@ -5,29 +5,30 @@
 const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
 
 if (!usuarioActual) {
-  window.location.href = "pages/login.html";
-}
+  window.location.replace("pages/login.html");
+} else {
+  // ==========================================
+  // MOSTRAR USUARIO
+  // ==========================================
 
-// ==========================================
-// MOSTRAR USUARIO
-// ==========================================
+  const elementoUsuario = document.getElementById("usuarioActual");
 
-const elementoUsuario = document.getElementById("usuarioActual");
+  if (elementoUsuario) {
+    elementoUsuario.textContent = usuarioActual.usuario;
+  }
 
-if (elementoUsuario && usuarioActual) {
-  elementoUsuario.textContent = usuarioActual.usuario;
-}
+  // ==========================================
+  // CERRAR SESIÓN
+  // ==========================================
 
-// ==========================================
-// CERRAR SESIÓN
-// ==========================================
+  const botonCerrarSesion = document.getElementById("cerrarSesion");
 
-const botonCerrarSesion = document.getElementById("cerrarSesion");
+  if (botonCerrarSesion) {
+    botonCerrarSesion.addEventListener("click", function () {
+      localStorage.removeItem("usuarioActual");
+      localStorage.removeItem("token");
 
-if (botonCerrarSesion) {
-  botonCerrarSesion.addEventListener("click", function () {
-    localStorage.removeItem("usuarioActual");
-
-    window.location.href = "pages/login.html";
-  });
+      window.location.replace("pages/login.html");
+    });
+  }
 }
