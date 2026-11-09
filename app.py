@@ -1467,7 +1467,11 @@ def obtener_detalle_venta(id):
                 v.total,
                 v.metodo_pago AS metodoPago,
                 v.estado,
-                c.nombre AS cliente
+                c.nombre AS cliente,
+                c.documento AS documentoCliente,
+                c.telefono AS telefonoCliente,
+                c.correo AS correoCliente,
+                c.direccion AS direccionCliente
             FROM ventas v
             LEFT JOIN clientes c ON v.cliente_id = c.id
             WHERE v.id = %s

@@ -460,22 +460,24 @@ async function mostrarVentas() {
                 <td>${escaparHTML(venta.estado || "")}</td>
 
                 <td>
-                    <button
-                        class="btn btn-accion btn-agro"
-                        onclick="verDetalleVenta(${venta.id})"
-                        title="Ver detalle de la venta"
-                    >
-                        <i class="fa-solid fa-eye"></i>
-                    </button>
+                    <button class="btn btn-accion btn-agro"
+    onclick="verDetalleVenta(${venta.id})"
+    title="Ver detalle de la venta">
+    <i class="fa-solid fa-eye"></i>
+</button>
 
-                    <button
-                        class="btn btn-accion btn-agro"
-                        onclick="registrarDevolucion(${venta.id})"
-                        title="Registrar devolución"
-                        ${venta.estado === "Devuelta" ? "disabled" : ""}
-                    >
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </button>
+<button class="btn btn-accion btn-agro"
+    onclick="registrarDevolucion(${venta.id})"
+    title="Registrar devolución"
+    ${venta.estado === "Devuelta" ? "disabled" : ""}>
+    <i class="fa-solid fa-rotate-left"></i>
+</button>
+
+<button class="btn btn-accion btn-agro"
+    onclick="generarFactura(${venta.id})"
+    title="Generar factura">
+    <i class="fa-solid fa-file-pdf"></i>
+</button>
                 </td>
             `;
 
@@ -701,3 +703,424 @@ async function iniciarVentas() {
 }
 
 iniciarVentas();
+
+// ==========================================
+// GENERAR FACTURA DE UNA VENTA
+// ==========================================
+
+async function generarFactura(ventaId) {
+  const ventana = window.open("", "_blank");
+
+  if (!ventana) {
+    alert("Permite las ventanas emergentes para generar la factura.");
+    return;
+  }
+
+  try {
+    const venta = await consultarAPI("/ventas/" + ventaId);
+
+    // Formato de moneda colombiana
+    const formatoPesos = (valor) => {
+      return Number(valor || 0).toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 0,
+      });
+    };
+
+    // Evitar insertar texto sin escapar en el HTML
+    const escaparHTML = (texto) => {
+      return String(texto ?? "").replace(
+        /[&<>"']/g,
+        (caracter) =>
+          ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[caracter],
+      );
+    };
+
+    // Crear filas de productos
+    const filas = venta.productos
+      .map((producto) => {
+        const devuelta = Number(producto.cantidadDevuelta || 0);
+
+        return `
+                <tr>
+                    <td>
+                        <strong>${escaparHTML(producto.producto)}</strong>
+                        <small>Código: ${escaparHTML(producto.productoCodigo || "N/A")}</small>
+                    </td>
+
+                    <td>${escaparHTML(producto.numeroLote || "N/A")}</td>
+
+                    <td>${producto.cantidad}</td>
+
+                    <td>${devuelta}</td>
+
+                    <td>${formatoPesos(producto.precio)}</td>
+
+                    <td>${formatoPesos(producto.subtotal)}</td>
+                </tr>
+            `;
+      })
+      .join("");
+
+    // Construir factura
+    const factura = `
+        <!DOCTYPE html>
+        <html lang="es">
+
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+            <title>Factura ${venta.id} - AgroGestión</title>
+
+            <style>
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                    margin: 0;
+                    padding: 35px;
+                    background: white;
+                }
+
+                .factura {
+                    max-width: 900px;
+                    margin: auto;
+                }
+
+                .encabezado {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 3px solid #245b3c;
+                    padding-bottom: 20px;
+                }
+
+                .empresa h1 {
+                    color: #245b3c;
+                    margin: 0;
+                    font-size: 30px;
+                }
+
+                .empresa p {
+                    margin: 5px 0;
+                    font-size: 13px;
+                }
+
+                .titulo {
+                    text-align: right;
+                }
+
+                .titulo h2 {
+                    margin: 0;
+                    font-size: 23px;
+                    color: #245b3c;
+                }
+
+                .titulo p {
+                    margin: 7px 0;
+                }
+
+                .seccion {
+                    margin-top: 25px;
+                }
+
+                .seccion h3 {
+                    color: #245b3c;
+                    border-bottom: 1px solid #ddd;
+                    padding-bottom: 8px;
+                    font-size: 16px;
+                }
+
+                .datos {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                    font-size: 14px;
+                }
+
+                .dato {
+                    line-height: 1.6;
+                }
+
+                .etiqueta {
+                    font-weight: bold;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 15px;
+                    font-size: 13px;
+                }
+
+                th {
+                    background: #245b3c;
+                    color: white;
+                    padding: 11px 7px;
+                    text-align: left;
+                }
+
+                td {
+                    border-bottom: 1px solid #ddd;
+                    padding: 11px 7px;
+                }
+
+                td small {
+                    display: block;
+                    color: #777;
+                    margin-top: 4px;
+                }
+
+                .resumen {
+                    width: 300px;
+                    margin: 25px 0 0 auto;
+                    border-top: 2px solid #245b3c;
+                    padding-top: 15px;
+                    text-align: right;
+                }
+
+                .total {
+                    font-size: 22px;
+                    font-weight: bold;
+                    color: #245b3c;
+                    margin-top: 10px;
+                }
+
+                .firma {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 60px;
+                    margin-top: 90px;
+                    text-align: center;
+                    font-size: 13px;
+                }
+
+                .linea {
+                    border-top: 1px solid #333;
+                    padding-top: 10px;
+                }
+
+                .pie {
+                    text-align: center;
+                    border-top: 1px solid #ddd;
+                    margin-top: 50px;
+                    padding-top: 15px;
+                    font-size: 12px;
+                    color: #777;
+                }
+
+                .botones {
+                    text-align: center;
+                    margin-bottom: 25px;
+                }
+
+                .botones button {
+                    background: #245b3c;
+                    color: white;
+                    border: none;
+                    padding: 12px 25px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 14px;
+                }
+
+                @media print {
+                    body {
+                        padding: 0;
+                    }
+
+                    .botones {
+                        display: none;
+                    }
+
+                    .factura {
+                        max-width: 100%;
+                    }
+                }
+
+                @media (max-width: 600px) {
+                    body {
+                        padding: 15px;
+                    }
+
+                    .encabezado {
+                        display: block;
+                    }
+
+                    .titulo {
+                        text-align: left;
+                        margin-top: 20px;
+                    }
+
+                    .datos {
+                        grid-template-columns: 1fr;
+                    }
+
+                    table {
+                        font-size: 11px;
+                    }
+                }
+
+            </style>
+        </head>
+
+        <body>
+
+            <div class="botones">
+                <button onclick="window.print()">
+                    Imprimir / Guardar como PDF
+                </button>
+            </div>
+
+            <div class="factura">
+
+                <div class="encabezado">
+
+                    <div class="empresa">
+                        <h1>AgroGestión</h1>
+                        <p>Sistema de Gestión de Agroquímicos</p>
+                        <p>SENA - Análisis y Desarrollo de Software</p>
+                    </div>
+
+                    <div class="titulo">
+                        <h2>FACTURA DE VENTA</h2>
+                        <p><strong>N.º:</strong> ${venta.id}</p>
+                        <p><strong>Fecha:</strong> ${escaparHTML(venta.fecha)}</p>
+                    </div>
+
+                </div>
+
+                <div class="seccion">
+
+                    <h3>Información del cliente</h3>
+
+                    <div class="datos">
+
+                        <div class="dato">
+                            <span class="etiqueta">Nombre:</span>
+                            ${escaparHTML(venta.cliente || "Cliente general")}
+                        </div>
+
+                        <div class="dato">
+                            <span class="etiqueta">Documento:</span>
+                            ${escaparHTML(venta.documentoCliente || "No registrado")}
+                        </div>
+
+                        <div class="dato">
+                            <span class="etiqueta">Teléfono:</span>
+                            ${escaparHTML(venta.telefonoCliente || "No registrado")}
+                        </div>
+
+                        <div class="dato">
+                            <span class="etiqueta">Correo:</span>
+                            ${escaparHTML(venta.correoCliente || "No registrado")}
+                        </div>
+
+                        <div class="dato">
+                            <span class="etiqueta">Dirección:</span>
+                            ${escaparHTML(venta.direccionCliente || "No registrada")}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="seccion">
+
+                    <h3>Detalle de productos</h3>
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Lote</th>
+                                <th>Cantidad</th>
+                                <th>Devuelta</th>
+                                <th>Precio</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            ${filas}
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="seccion">
+
+                    <h3>Información del pago</h3>
+
+                    <div class="datos">
+
+                        <div class="dato">
+                            <span class="etiqueta">Método de pago:</span>
+                            ${escaparHTML(venta.metodoPago)}
+                        </div>
+
+                        <div class="dato">
+                            <span class="etiqueta">Estado:</span>
+                            ${escaparHTML(venta.estado)}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="resumen">
+
+                    <div class="total">
+                        TOTAL: ${formatoPesos(venta.total)}
+                    </div>
+
+                </div>
+
+                <div class="firma">
+
+                    <div class="linea">
+                        Firma del cliente
+                    </div>
+
+                    <div class="linea">
+                        Firma del responsable
+                    </div>
+
+                </div>
+
+                <div class="pie">
+                    <p><strong>AgroGestión</strong></p>
+                    <p>Gracias por su compra.</p>
+                    <p>Documento interno de venta - SENA 2026</p>
+                </div>
+
+            </div>
+
+        </body>
+        </html>
+        `;
+
+    ventana.document.write(factura);
+    ventana.document.close();
+  } catch (error) {
+    ventana.close();
+
+    console.error("Error al generar factura:", error);
+
+    alert("No fue posible generar la factura.");
+  }
+}
