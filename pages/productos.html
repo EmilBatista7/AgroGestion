@@ -20,55 +20,44 @@
 
     <style>
         :root {
-            --agro-verde-oscuro: #123d2b;
-            --agro-verde: #1f6b45;
-            --agro-verde-claro: #eaf4ed;
-            --agro-dorado: #d5a84f;
-            --agro-texto: #203329;
-            --agro-fondo: #f4f7f3;
+            --agro-verde-oscuro: #173f2a;
+            --agro-verde: #245b3c;
+            --agro-dorado: #d9ad45;
+            --agro-fondo: #f5f7f2;
+            --agro-texto: #26352b;
         }
 
         body.pagina-agro {
-            padding-top: 78px;
             background: var(--agro-fondo);
             color: var(--agro-texto);
+            padding-top: 76px;
         }
+
+        /* ==========================================
+BARRA DE NAVEGACIÓN
+========================================== */
 
         .navbar-agro {
             min-height: 76px;
-            background: linear-gradient(110deg, #103b29, #1f6b45) !important;
-            box-shadow: 0 5px 22px rgba(16, 48, 32, .18);
-            border-bottom: 1px solid rgba(255, 255, 255, .12);
-        }
-
-        .navbar-agro .container-fluid {
-            gap: 1rem;
+            background: linear-gradient(105deg, #123522, #245b3c) !important;
+            box-shadow: 0 4px 18px rgba(13, 42, 25, .18);
+            border-bottom: 3px solid var(--agro-dorado);
         }
 
         .navbar-agro .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: .65rem;
+            color: #fff;
             letter-spacing: .2px;
         }
 
-        .marca-icono {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, .13);
-            color: #e3c36f;
-            font-size: 1.15rem;
+        .navbar-agro .navbar-brand i {
+            color: var(--agro-dorado);
         }
 
         .navbar-agro .nav-link {
-            color: rgba(255, 255, 255, .84) !important;
-            font-size: .9rem;
-            padding: .65rem .7rem !important;
-            border-radius: 9px;
+            color: rgba(255, 255, 255, .86) !important;
+            font-size: .91rem;
+            padding: .65rem .58rem !important;
+            border-radius: 7px;
             white-space: nowrap;
             transition: background .2s ease, color .2s ease;
         }
@@ -79,22 +68,100 @@
             background: rgba(255, 255, 255, .13);
         }
 
+        .navbar-agro .nav-link.active {
+            box-shadow: inset 0 -2px var(--agro-dorado);
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, .35);
+        }
+
+        /* ==========================================
+   INFORMACIÓN DE SESIÓN
+========================================== */
+
         .sesion-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             padding-left: 1rem;
+            margin-left: .5rem;
             border-left: 1px solid rgba(255, 255, 255, .2);
         }
 
         .usuario-nav {
+            display: flex;
+            align-items: center;
+            gap: 9px;
             color: #fff;
-            font-size: .86rem;
-            white-space: nowrap;
+            padding: .35rem .2rem;
         }
 
-        .btn-cerrar-sesion {
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, .65);
-            border-radius: 9px;
+        .usuario-avatar {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            border-radius: 50%;
+            color: var(--agro-verde-oscuro);
+            background: var(--agro-dorado);
+            font-size: 1rem;
         }
+
+        .usuario-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .usuario-info small {
+            color: rgba(255, 255, 255, .75);
+            font-size: .68rem;
+        }
+
+        .usuario-info small i {
+            color: #75d69a;
+            font-size: .5rem;
+            margin-right: 3px;
+        }
+
+        .usuario-info strong {
+            color: #fff;
+            font-size: .85rem;
+            font-weight: 700;
+        }
+
+        .usuario-info span {
+            color: rgba(255, 255, 255, .7);
+            font-size: .7rem;
+            text-transform: capitalize;
+        }
+
+        /* ==========================================
+   BOTÓN SALIR
+========================================== */
+
+        .btn-salir {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: .55rem .85rem;
+            color: #fff;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .4);
+            border-radius: 9px;
+            font-size: .85rem;
+            font-weight: 600;
+            transition: background .2s ease, color .2s ease;
+        }
+
+        .btn-salir:hover {
+            color: var(--agro-verde-oscuro);
+            background: #fff;
+        }
+
 
         .btn-cerrar-sesion:hover {
             background: #fff;
@@ -361,42 +428,46 @@
             background: #f8fbf8;
         }
 
+
         .footer-agro {
-            margin-top: 2rem;
-            padding: 2.6rem 1rem 1.8rem;
+            background: #123522;
+            color: rgba(255, 255, 255, .78);
+            border-top: 3px solid var(--agro-dorado);
+            padding: 2rem 0;
+        }
+
+        .footer-agro strong,
+        .footer-agro h5 {
             color: #fff;
-            background: linear-gradient(110deg, #103b29, #1f6b45);
-            border-top: 4px solid #d5a84f;
+            font-weight: 800;
         }
 
         .footer-agro .footer-marca {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
-            margin-bottom: .7rem;
-            border-radius: 14px;
-            color: #e5c66f;
-            background: rgba(255, 255, 255, .12);
-            font-size: 1.35rem;
-        }
-
-        .footer-agro h5 {
-            margin-bottom: .4rem;
-            font-weight: 800;
+            width: 42px;
+            height: 42px;
+            margin-bottom: .6rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .1);
+            color: var(--agro-dorado);
+            font-size: 1.3rem;
         }
 
         .footer-agro p {
-            margin-bottom: .65rem;
+            margin-bottom: .5rem;
             color: rgba(255, 255, 255, .78);
         }
 
         .footer-agro small {
-            color: rgba(255, 255, 255, .65);
+            color: rgba(255, 255, 255, .6);
         }
 
-        @media (max-width: 1199.98px) {
+
+
+        @media (max-width: 1399.98px) {
+
             .navbar-agro .navbar-collapse {
                 padding: 1rem 0 .5rem;
             }
@@ -406,12 +477,23 @@
             }
 
             .sesion-nav {
+                align-items: flex-start;
+                flex-direction: column;
                 padding: 1rem 0 0;
-                margin-top: .5rem;
+                margin: .5rem 0 0;
                 border-left: 0;
                 border-top: 1px solid rgba(255, 255, 255, .2);
             }
+
+            .usuario-nav {
+                margin: .2rem 0;
+            }
+
+            .btn-salir {
+                margin-top: .2rem;
+            }
         }
+
 
         @media (max-width: 767.98px) {
             body.pagina-agro {
@@ -482,50 +564,123 @@
     ================================== -->
 
     <!-- MENÚ SUPERIOR -->
-    <nav class="navbar navbar-expand-xl navbar-dark navbar-agro fixed-top">
-        <div class="container-fluid px-3 px-xl-4">
-            <a class="navbar-brand fw-bold" href="../index.html">
-                <span class="marca-icono"><i class="fa-solid fa-leaf"></i></span>
-                <span>AgroGestión</span>
+    <nav class="navbar navbar-expand-xxl navbar-dark navbar-agro fixed-top">
+
+        <div class="container-fluid px-3 px-xxl-4">
+
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="../index.html">
+                <i class="fa-solid fa-leaf me-2"></i>
+                AgroGestión
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
-                aria-controls="menu" aria-expanded="false" aria-label="Mostrar navegación">
+                aria-controls="menu" aria-expanded="false" aria-label="Abrir menú">
+
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="menu">
-                <ul class="navbar-nav mx-xl-auto mb-3 mb-xl-0">
-                    <li class="nav-item"><a class="nav-link" href="../index.html"><i
-                                class="fa-solid fa-house me-1"></i>Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="productos.html"><i
-                                class="fa-solid fa-flask me-1"></i>Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="inventario.html"><i
-                                class="fa-solid fa-boxes-stacked me-1"></i>Inventario</a></li>
-                    <li class="nav-item"><a class="nav-link" href="ventas.html"><i
-                                class="fa-solid fa-cart-shopping me-1"></i>Ventas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="clientes.html"><i
-                                class="fa-solid fa-users me-1"></i>Clientes</a></li>
-                    <li class="nav-item"><a id="menuProveedores" class="nav-link" href="proveedores.html"><i
-                                class="fa-solid fa-truck-field me-1"></i>Proveedores</a></li>
-                    <li class="nav-item"><a class="nav-link" href="lotes.html"><i
-                                class="fa-solid fa-box-open me-1"></i>Lotes</a></li>
-                    <li class="nav-item"><a id="menuCaja" class="nav-link" href="caja.html"><i
-                                class="fa-solid fa-cash-register me-1"></i>Caja</a></li>
-                    <li class="nav-item"><a id="menuReportes" class="nav-link" href="reportes.html"><i
-                                class="fa-solid fa-chart-column me-1"></i>Reportes</a></li>
+
+                <ul class="navbar-nav mx-xxl-auto mb-3 mb-xxl-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">
+                            <i class="fa-solid fa-house me-1"></i>Inicio
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="productos.html">
+                            <i class="fa-solid fa-flask me-1"></i>Productos
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="inventario.html">
+                            <i class="fa-solid fa-boxes-stacked me-1"></i>Inventario
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="ventas.html">
+                            <i class="fa-solid fa-cart-shopping me-1"></i>Ventas
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="clientes.html">
+                            <i class="fa-solid fa-users me-1"></i>Clientes
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a id="menuProveedores" class="nav-link" href="proveedores.html">
+                            <i class="fa-solid fa-truck-field me-1"></i>Proveedores
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="lotes.html">
+                            <i class="fa-solid fa-box-open me-1"></i>Lotes
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a id="menuCaja" class="nav-link" href="caja.html">
+                            <i class="fa-solid fa-cash-register me-1"></i>Caja
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a id="menuReportes" class="nav-link" href="reportes.html">
+                            <i class="fa-solid fa-chart-column me-1"></i>Reportes
+                        </a>
+                    </li>
+
                 </ul>
 
-                <div class="sesion-nav d-flex flex-column flex-xl-row align-items-xl-center gap-2">
-                    <span class="usuario-nav"><i class="fa-solid fa-circle-user me-1"></i>Usuario: <strong
-                            id="usuarioActual"></strong></span>
-                    <button id="cerrarSesion" type="button" class="btn btn-cerrar-sesion btn-sm">
-                        <i class="fa-solid fa-right-from-bracket me-1"></i>Cerrar sesión
+                <!-- INFORMACIÓN DE SESIÓN -->
+
+                <div class="sesion-nav">
+
+                    <div class="usuario-nav">
+
+                        <div class="usuario-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+
+                        <div class="usuario-info">
+
+                            <small>
+                                <i class="fa-solid fa-circle"></i>
+                                Sesión activa
+                            </small>
+
+                            <strong id="usuarioActual">Usuario</strong>
+
+                            <span id="rolUsuario">Usuario</span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BOTÓN CERRAR SESIÓN -->
+
+                    <button id="cerrarSesion" type="button" class="btn-salir">
+
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Salir
+
                     </button>
+
                 </div>
+
             </div>
+
         </div>
+
     </nav>
+
 
 
 

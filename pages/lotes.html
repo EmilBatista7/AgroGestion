@@ -27,87 +27,88 @@
          MENÚ PRINCIPAL
     =========================================== -->
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-agro fixed-top">
+    <nav class="navbar navbar-expand-xxl navbar-dark navbar-agro fixed-top">
 
-        <div class="container">
+        <div class="container-fluid px-3 px-xxl-4">
 
             <a class="navbar-brand fw-bold d-flex align-items-center" href="../index.html">
-
                 <i class="fa-solid fa-leaf me-2"></i>
-
                 AgroGestión
-
             </a>
 
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
-
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
                 <span class="navbar-toggler-icon"></span>
-
             </button>
-
 
             <div class="collapse navbar-collapse" id="menuPrincipal">
 
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav mx-xxl-auto align-items-xxl-center">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="../index.html">
-                            Inicio
-                        </a>
+                        <a class="nav-link" href="../index.html">Inicio</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="productos.html">
-                            Productos
-                        </a>
+                        <a class="nav-link" href="productos.html">Productos</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="inventario.html">
-                            Inventario
-                        </a>
+                        <a class="nav-link" href="inventario.html">Inventario</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="ventas.html">
-                            Ventas
-                        </a>
+                        <a class="nav-link" href="ventas.html">Ventas</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="clientes.html">
-                            Clientes
-                        </a>
+                        <a class="nav-link" href="clientes.html">Clientes</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="proveedores.html">
-                            Proveedores
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-
                         <a id="menuProveedores" class="nav-link" href="proveedores.html">
                             Proveedores
                         </a>
-
                     </li>
 
                     <li class="nav-item">
-                        <a id="menuCaja" class="nav-link" href="caja.html">
-                            Caja
-                        </a>
+                        <a class="nav-link active" href="lotes.html">Lotes</a>
                     </li>
 
                     <li class="nav-item">
-                        <a id="menuReportes" class="nav-link" href="reportes.html">
-                            Reportes
-                        </a>
+                        <a id="menuCaja" class="nav-link" href="caja.html">Caja</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a id="menuReportes" class="nav-link" href="reportes.html">Reportes</a>
                     </li>
 
                 </ul>
+
+                <div class="sesion-nav">
+
+                    <div class="usuario-nav">
+
+                        <div class="usuario-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+
+                        <div class="usuario-info">
+                            <small>
+                                <i class="fa-solid fa-circle"></i> Sesión activa
+                            </small>
+                            <strong id="usuarioActual">Usuario</strong>
+                            <span id="rolUsuario">Usuario</span>
+                        </div>
+
+                    </div>
+
+                    <button id="cerrarSesion" type="button" class="btn-salir">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Salir
+                    </button>
+
+                </div>
 
             </div>
 
@@ -450,7 +451,7 @@
 
 
         <!-- ==========================================
-             TABLA DE LOTES
+            TABLA DE LOTES
         =========================================== -->
 
         <section class="agro-panel">
@@ -536,24 +537,19 @@
 
 
     <!-- ==========================================
-         PIE DE PÁGINA
+        PIE DE PÁGINA
     =========================================== -->
 
-    <footer class="footer-agro mt-5">
+    <footer class="footer-agro mt-4">
 
         <div class="container text-center">
 
-            <div class="mb-2">
-
+            <div class="footer-logo mb-2">
                 <i class="fa-solid fa-leaf me-2"></i>
-
-                <strong>AgroGestión</strong>
-
+                AgroGestión
             </div>
 
-            <p class="mb-1">
-                Sistema de Gestión de Agroquímicos
-            </p>
+            <p>Sistema de Gestión de Agroquímicos</p>
 
             <small>
                 SENA - Análisis y Desarrollo de Software - 2026
@@ -572,12 +568,12 @@
 
 
     <!-- JavaScript -->
-    
+
     <script src="../js/api.js"></script>
     <script src="../js/lotes.js"></script>
     <script src="../js/sesion.js"></script>
     <script src="../js/permisos.js"></script>
-    
+
 
 </body>
 
