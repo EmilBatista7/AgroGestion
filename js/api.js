@@ -1,25 +1,48 @@
+﻿// ==========================================
+// CONEXION DE AGROGESTION CON RAILWAY
 // ==========================================
-// ENVIAR TOKEN DE AUTENTICACIÓN A FLASK
-// ==========================================
+
+const API_LOCAL = "http://127.0.0.1:5001";
+const API_RAILWAY = "https://agrogestion-production-36d5a971.up.railway.app";
 
 const fetchOriginal = window.fetch.bind(window);
 
 window.fetch = function (recurso, opciones = {}) {
-  const url = typeof recurso === "string" ? recurso : recurso.url;
 
-  const token = localStorage.getItem("token");
+    let url = typeof recurso === "string" ? recurso : recurso.url;
 
-  // Solo agregar el token a las peticiones de AgroGestión
-  if (url.includes("127.0.0.1:5001/api/") && token) {
-    const encabezados = new Headers(opciones.headers || {});
+    // Redirigir las peticiones locales a Railway
+    if (url.startsWith(API_LOCAL)) {
+        url = url.replace(API_LOCAL, API_RAILWAY);
 
-    encabezados.set("Authorization", `Bearer ${token}`);
+        if (recurso instanceof Request) {
+            recurso = new Request(url, recurso);
+        } else {
+            recurso = url;
+        }
+    }
 
-    opciones = {
-      ...opciones,
-      headers: encabezados,
-    };
-  }
+    // Obtener el token de autenticacion
+    const token = localStorage.getItem("token");
 
-  return fetchOriginal(recurso, opciones);
+    // Enviar el token a Railway
+    if (url.startsWith(API_RAILWAY + "/api/") && token) {
+
+        const encabezados = new Headers(
+            recurso instanceof Request ? recurso.headers : {}
+        );
+
+        new Headers(opciones.headers || {}).forEach((valor, nombre) => {
+            encabezados.set(nombre, valor);
+        });
+
+        encabezados.set("Authorization", `Bearer ${token}`);
+
+        opciones = {
+            ...opciones,
+            headers: encabezados
+        };
+    }
+
+    return fetchOriginal(recurso, opciones);
 };
