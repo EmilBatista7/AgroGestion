@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+﻿from flask import Flask, jsonify, request
 import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import check_password_hash
@@ -10,13 +10,13 @@ app = Flask(__name__)
 
 
 # ==========================================
-# CONFIGURACIÓN DE SEGURIDAD
+# CONFIGURACIÃ“N DE SEGURIDAD
 # ==========================================
 
-app.config["SECRET_KEY"] = os.environ.get(
-    "SECRET_KEY",
-    "clave-desarrollo-agrogestion-cambiar-en-produccion"
-)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
+if not app.config["SECRET_KEY"]:
+    raise RuntimeError("Falta configurar la variable SECRET_KEY")
 
 # Crear herramienta para generar y verificar tokens
 serializador = URLSafeTimedSerializer(
@@ -38,7 +38,7 @@ def requiere_autenticacion(funcion):
 
         if not autorizacion.startswith("Bearer "):
             return jsonify({
-                "error": "Debes iniciar sesión."
+                "error": "Debes iniciar sesiÃ³n."
             }), 401
 
         token = autorizacion.split(" ", 1)[1]
@@ -53,12 +53,12 @@ def requiere_autenticacion(funcion):
 
         except SignatureExpired:
             return jsonify({
-                "error": "La sesión ha expirado. Inicia sesión nuevamente."
+                "error": "La sesiÃ³n ha expirado. Inicia sesiÃ³n nuevamente."
             }), 401
 
         except BadSignature:
             return jsonify({
-                "error": "Token de sesión no válido."
+                "error": "Token de sesiÃ³n no vÃ¡lido."
             }), 401
 
         return funcion(*args, **kwargs)
@@ -80,7 +80,7 @@ def requiere_rol(rol_requerido):
 
             if request.usuario.get("rol") != rol_requerido:
                 return jsonify({
-                    "error": "No tienes permisos para realizar esta operación."
+                    "error": "No tienes permisos para realizar esta operaciÃ³n."
                 }), 403
 
             return funcion(*args, **kwargs)
@@ -91,7 +91,7 @@ def requiere_rol(rol_requerido):
 
 
 # ==========================================
-# CONEXIÓN CON MYSQL
+# CONEXIÃ“N CON MYSQL
 # ==========================================
 
 def conectar_bd():
@@ -112,7 +112,7 @@ def conectar_bd():
 
 
 # ==========================================
-# PERMITIR COMUNICACIÓN CON EL FRONTEND
+# PERMITIR COMUNICACIÃ“N CON EL FRONTEND
 # ==========================================
 
 @app.after_request
@@ -128,7 +128,7 @@ def permitir_cors(respuesta):
 
 
 # ==========================================
-# VERIFICAR TOKEN DE AUTENTICACIÓN
+# VERIFICAR TOKEN DE AUTENTICACIÃ“N
 # ==========================================
 
 def requiere_token(funcion):
@@ -140,7 +140,7 @@ def requiere_token(funcion):
 
         if not autorizacion or not autorizacion.startswith("Bearer "):
             return jsonify({
-                "mensaje": "No estás autorizado. Debes iniciar sesión."
+                "mensaje": "No estÃ¡s autorizado. Debes iniciar sesiÃ³n."
             }), 401
 
         token = autorizacion.split(" ", 1)[1]
@@ -154,7 +154,7 @@ def requiere_token(funcion):
 
         except Exception:
             return jsonify({
-                "mensaje": "El token es inválido o ha expirado."
+                "mensaje": "El token es invÃ¡lido o ha expirado."
             }), 401
 
         return funcion(*args, **kwargs)
@@ -164,7 +164,7 @@ def requiere_token(funcion):
 
 
 # ==========================================
-# VERIFICAR PERMISOS SEGÚN EL ROL
+# VERIFICAR PERMISOS SEGÃšN EL ROL
 # ==========================================
 
 def requiere_rol(*roles_permitidos):
@@ -178,7 +178,7 @@ def requiere_rol(*roles_permitidos):
 
             if rol not in roles_permitidos:
                 return jsonify({
-                    "mensaje": "No tienes permisos para realizar esta operación."
+                    "mensaje": "No tienes permisos para realizar esta operaciÃ³n."
                 }), 403
 
             return funcion(*args, **kwargs)
@@ -190,7 +190,7 @@ def requiere_rol(*roles_permitidos):
 
 
 # ==========================================
-# COMPROBAR CONEXIÓN
+# COMPROBAR CONEXIÃ“N
 # ==========================================
 
 @app.route("/api/estado", methods=["GET"])
@@ -210,7 +210,7 @@ def estado():
         resultado = cursor.fetchone()
 
         return jsonify({
-            "mensaje": "Conexión correcta con AgroGestión",
+            "mensaje": "ConexiÃ³n correcta con AgroGestiÃ³n",
             "base_datos": "agrogestion",
             "total_productos": resultado[0]
         })
@@ -235,7 +235,7 @@ def listar_productos():
     conexion = conectar_bd()
 
     if conexion is None:
-        return jsonify({"error": "No hay conexión con MySQL"}), 500
+        return jsonify({"error": "No hay conexiÃ³n con MySQL"}), 500
 
     cursor = None
 
@@ -291,11 +291,11 @@ def registrar_producto():
 
     if not codigo or not nombre:
         return jsonify({
-            "error": "El código y el nombre son obligatorios"
+            "error": "El cÃ³digo y el nombre son obligatorios"
         }), 400
 
     if estado not in ["Activo", "Inactivo"]:
-        return jsonify({"error": "Estado no válido"}), 400
+        return jsonify({"error": "Estado no vÃ¡lido"}), 400
 
     try:
         precio = float(datos.get("precio", 0))
@@ -309,13 +309,13 @@ def registrar_producto():
 
     except (ValueError, TypeError):
         return jsonify({
-            "error": "Precio y stock deben ser valores numéricos válidos"
+            "error": "Precio y stock deben ser valores numÃ©ricos vÃ¡lidos"
         }), 400
 
     conexion = conectar_bd()
 
     if conexion is None:
-        return jsonify({"error": "No hay conexión con MySQL"}), 500
+        return jsonify({"error": "No hay conexiÃ³n con MySQL"}), 500
 
     cursor = None
 
@@ -353,7 +353,7 @@ def registrar_producto():
 
         if error.errno == 1062:
             return jsonify({
-                "error": "Ya existe un producto con ese código"
+                "error": "Ya existe un producto con ese cÃ³digo"
             }), 409
 
         print("Error al registrar producto:", error)
@@ -386,11 +386,11 @@ def actualizar_producto(id):
 
     if not codigo or not nombre:
         return jsonify({
-            "error": "El código y el nombre son obligatorios"
+            "error": "El cÃ³digo y el nombre son obligatorios"
         }), 400
 
     if estado not in ["Activo", "Inactivo"]:
-        return jsonify({"error": "Estado no válido"}), 400
+        return jsonify({"error": "Estado no vÃ¡lido"}), 400
 
     try:
         precio = float(datos.get("precio", 0))
@@ -404,13 +404,13 @@ def actualizar_producto(id):
 
     except (ValueError, TypeError):
         return jsonify({
-            "error": "Precio y stock deben ser valores numéricos válidos"
+            "error": "Precio y stock deben ser valores numÃ©ricos vÃ¡lidos"
         }), 400
 
     conexion = conectar_bd()
 
     if conexion is None:
-        return jsonify({"error": "No hay conexión con MySQL"}), 500
+        return jsonify({"error": "No hay conexiÃ³n con MySQL"}), 500
 
     cursor = None
 
@@ -466,7 +466,7 @@ def actualizar_producto(id):
 
         if error.errno == 1062:
             return jsonify({
-                "error": "Ya existe otro producto con ese código"
+                "error": "Ya existe otro producto con ese cÃ³digo"
             }), 409
 
         print("Error al actualizar producto:", error)
@@ -489,7 +489,7 @@ def eliminar_producto(id):
     conexion = conectar_bd()
 
     if conexion is None:
-        return jsonify({"error": "No hay conexión con MySQL"}), 500
+        return jsonify({"error": "No hay conexiÃ³n con MySQL"}), 500
 
     cursor = None
 
@@ -519,7 +519,7 @@ def eliminar_producto(id):
             return jsonify({
                 "error": (
                     "No se puede eliminar este producto porque "
-                    "está relacionado con lotes, ventas o movimientos "
+                    "estÃ¡ relacionado con lotes, ventas o movimientos "
                     "de inventario."
                 )
             }), 409
@@ -596,10 +596,10 @@ def registrar_cliente():
         return jsonify({"error": "Todos los campos son obligatorios"}), 400
 
     if tipo not in ["Particular", "Empresa", "Productor"]:
-        return jsonify({"error": "Tipo de cliente no válido"}), 400
+        return jsonify({"error": "Tipo de cliente no vÃ¡lido"}), 400
 
     if estado not in ["Activo", "Inactivo"]:
-        return jsonify({"error": "Estado no válido"}), 400
+        return jsonify({"error": "Estado no vÃ¡lido"}), 400
 
     conexion = conectar_bd()
 
@@ -659,10 +659,10 @@ def actualizar_cliente(id):
         return jsonify({"error": "Todos los campos son obligatorios"}), 400
 
     if tipo not in ["Particular", "Empresa", "Productor"]:
-        return jsonify({"error": "Tipo de cliente no válido"}), 400
+        return jsonify({"error": "Tipo de cliente no vÃ¡lido"}), 400
 
     if estado not in ["Activo", "Inactivo"]:
-        return jsonify({"error": "Estado no válido"}), 400
+        return jsonify({"error": "Estado no vÃ¡lido"}), 400
 
     conexion = conectar_bd()
 
@@ -829,7 +829,7 @@ def registrar_proveedor():
         return jsonify({"error": "Todos los campos son obligatorios"}), 400
 
     if estado not in ["Activo", "Inactivo"]:
-        return jsonify({"error": "Estado no válido"}), 400
+        return jsonify({"error": "Estado no vÃ¡lido"}), 400
 
     conexion = conectar_bd()
 
@@ -894,7 +894,7 @@ def actualizar_proveedor(id):
         return jsonify({"error": "Todos los campos son obligatorios"}), 400
 
     if estado not in ["Activo", "Inactivo"]:
-        return jsonify({"error": "Estado no válido"}), 400
+        return jsonify({"error": "Estado no vÃ¡lido"}), 400
 
     conexion = conectar_bd()
 
@@ -1088,14 +1088,14 @@ def registrar_lote():
 
         if fecha_vencimiento <= fecha_fabricacion:
             return jsonify({
-                "error": "La fecha de vencimiento debe ser posterior a la fabricación"
+                "error": "La fecha de vencimiento debe ser posterior a la fabricaciÃ³n"
             }), 400
 
         if estado not in ["Disponible", "Bloqueado"]:
-            return jsonify({"error": "El estado seleccionado no es válido"}), 400
+            return jsonify({"error": "El estado seleccionado no es vÃ¡lido"}), 400
 
     except (ValueError, TypeError):
-        return jsonify({"error": "La cantidad debe ser un número entero válido"}), 400
+        return jsonify({"error": "La cantidad debe ser un nÃºmero entero vÃ¡lido"}), 400
 
     conexion = conectar_bd()
 
@@ -1141,7 +1141,7 @@ def registrar_lote():
         conexion.rollback()
 
         if error.errno == 1062:
-            return jsonify({"error": "Ya existe un lote con ese número"}), 409
+            return jsonify({"error": "Ya existe un lote con ese nÃºmero"}), 409
 
         return jsonify({"error": str(error)}), 500
 
@@ -1267,10 +1267,10 @@ def registrar_movimiento_inventario():
         cantidad = int(cantidad)
 
         if lote_id <= 0 or cantidad <= 0:
-            return jsonify({"error": "El lote y la cantidad deben ser válidos"}), 400
+            return jsonify({"error": "El lote y la cantidad deben ser vÃ¡lidos"}), 400
 
         if tipo not in ["Entrada", "Salida"]:
-            return jsonify({"error": "El tipo de movimiento no es válido"}), 400
+            return jsonify({"error": "El tipo de movimiento no es vÃ¡lido"}), 400
 
         if usuario_id in ["", None]:
             usuario_id = None
@@ -1278,7 +1278,7 @@ def registrar_movimiento_inventario():
             usuario_id = int(usuario_id)
 
     except (ValueError, TypeError):
-        return jsonify({"error": "Los datos numéricos no son válidos"}), 400
+        return jsonify({"error": "Los datos numÃ©ricos no son vÃ¡lidos"}), 400
 
     conexion = conectar_bd()
 
@@ -1290,7 +1290,7 @@ def registrar_movimiento_inventario():
     try:
         cursor = conexion.cursor(dictionary=True)
 
-        # Iniciar transacción
+        # Iniciar transacciÃ³n
         conexion.start_transaction()
 
         # Buscar y bloquear el lote seleccionado
@@ -1546,14 +1546,14 @@ def registrar_venta():
 
     if not cliente_id or not metodo_pago or not productos:
         return jsonify({
-            "error": "Debe seleccionar un cliente, un método de pago y productos"
+            "error": "Debe seleccionar un cliente, un mÃ©todo de pago y productos"
         }), 400
 
     if metodo_pago not in ["Efectivo", "Transferencia", "Tarjeta"]:
-        return jsonify({"error": "El método de pago no es válido"}), 400
+        return jsonify({"error": "El mÃ©todo de pago no es vÃ¡lido"}), 400
 
     if not isinstance(productos, list):
-        return jsonify({"error": "Los productos enviados no son válidos"}), 400
+        return jsonify({"error": "Los productos enviados no son vÃ¡lidos"}), 400
 
     try:
         cliente_id = int(cliente_id)
@@ -1573,7 +1573,7 @@ def registrar_venta():
 
     except (ValueError, TypeError, AttributeError):
         return jsonify({
-            "error": "Los datos de los productos no son válidos"
+            "error": "Los datos de los productos no son vÃ¡lidos"
         }), 400
 
     conexion = conectar_bd()
@@ -1587,7 +1587,7 @@ def registrar_venta():
         cursor = conexion.cursor(dictionary=True)
         conexion.start_transaction()
 
-        # Verificar que el cliente exista y esté activo
+        # Verificar que el cliente exista y estÃ© activo
         cursor.execute("""
             SELECT id, nombre
             FROM clientes
@@ -1600,7 +1600,7 @@ def registrar_venta():
         if not cliente:
             conexion.rollback()
             return jsonify({
-                "error": "El cliente no existe o está inactivo"
+                "error": "El cliente no existe o estÃ¡ inactivo"
             }), 400
 
         total = 0
@@ -1625,7 +1625,7 @@ def registrar_venta():
             if not producto or producto["estado"] != "Activo":
                 conexion.rollback()
                 return jsonify({
-                    "error": "Uno de los productos no existe o está inactivo"
+                    "error": "Uno de los productos no existe o estÃ¡ inactivo"
                 }), 400
 
             # Bloquear y consultar el lote
@@ -1658,7 +1658,7 @@ def registrar_venta():
             if lote["estado"] != "Disponible":
                 conexion.rollback()
                 return jsonify({
-                    "error": "Uno de los lotes no está disponible"
+                    "error": "Uno de los lotes no estÃ¡ disponible"
                 }), 400
 
             if lote["fecha_vencimiento"] < __import__("datetime").date.today():
@@ -1693,7 +1693,7 @@ def registrar_venta():
 
         total = round(total, 2)
 
-        # Obtener usuario de la sesión, si se envía
+        # Obtener usuario de la sesiÃ³n, si se envÃ­a
         usuario_id = datos.get("usuarioId")
 
         if usuario_id in ["", None]:
@@ -1831,7 +1831,7 @@ def registrar_venta():
 
 
 # ==========================================
-# REGISTRAR DEVOLUCIÓN DE UNA VENTA
+# REGISTRAR DEVOLUCIÃ“N DE UNA VENTA
 # ==========================================
 
 @app.route("/api/ventas/<int:id>/devoluciones", methods=["POST"])
@@ -1852,7 +1852,7 @@ def registrar_devolucion(id):
 
     except (ValueError, TypeError):
         return jsonify({
-            "error": "El detalle y la cantidad deben ser válidos"
+            "error": "El detalle y la cantidad deben ser vÃ¡lidos"
         }), 400
 
     conexion = conectar_bd()
@@ -1887,7 +1887,7 @@ def registrar_devolucion(id):
         if not detalle:
             conexion.rollback()
             return jsonify({
-                "error": "No se encontró el producto en esta venta"
+                "error": "No se encontrÃ³ el producto en esta venta"
             }), 404
 
         cantidad_pendiente = (
@@ -1899,7 +1899,7 @@ def registrar_devolucion(id):
             conexion.rollback()
             return jsonify({
                 "error": (
-                    "La cantidad supera las unidades que todavía "
+                    "La cantidad supera las unidades que todavÃ­a "
                     "se pueden devolver"
                 )
             }), 400
@@ -1912,7 +1912,7 @@ def registrar_devolucion(id):
                 "error": "El producto no tiene un lote asociado para devolver"
             }), 400
 
-        # Bloquear el lote que recibirá las unidades
+        # Bloquear el lote que recibirÃ¡ las unidades
         cursor.execute("""
             SELECT id, cantidad
             FROM lotes
@@ -1925,7 +1925,7 @@ def registrar_devolucion(id):
         if not lote:
             conexion.rollback()
             return jsonify({
-                "error": "No se encontró el lote de esta venta"
+                "error": "No se encontrÃ³ el lote de esta venta"
             }), 400
 
         nueva_cantidad = int(lote["cantidad"]) + cantidad
@@ -1979,7 +1979,7 @@ def registrar_devolucion(id):
             detalle["producto_codigo"],
             lote_id,
             cantidad,
-            "Devolución de venta #" + str(id)
+            "DevoluciÃ³n de venta #" + str(id)
         ))
 
         # Calcular el dinero que se devuelve
@@ -1998,7 +1998,7 @@ def registrar_devolucion(id):
             )
             VALUES (NULL, 'Egreso', %s, %s)
         """, (
-            "Devolución de venta #" + str(id),
+            "DevoluciÃ³n de venta #" + str(id),
             valor_devolucion
         ))
 
@@ -2022,14 +2022,14 @@ def registrar_devolucion(id):
         else:
             cursor.execute("""
                 UPDATE ventas
-                SET estado = 'Devolución parcial'
+                SET estado = 'DevoluciÃ³n parcial'
                 WHERE id = %s
             """, (id,))
 
         conexion.commit()
 
         return jsonify({
-            "mensaje": "Devolución registrada correctamente",
+            "mensaje": "DevoluciÃ³n registrada correctamente",
             "cantidadDevuelta": cantidad,
             "valorDevuelto": valor_devolucion,
             "stockActual": stock_total
@@ -2037,9 +2037,9 @@ def registrar_devolucion(id):
 
     except (Error, ValueError, TypeError) as error:
         conexion.rollback()
-        print("Error al registrar devolución:", error)
+        print("Error al registrar devoluciÃ³n:", error)
         return jsonify({
-            "error": "No se pudo registrar la devolución"
+            "error": "No se pudo registrar la devoluciÃ³n"
         }), 500
 
     finally:
@@ -2115,7 +2115,7 @@ def registrar_movimiento_caja():
     valor = datos.get("valor")
 
     if tipo not in ["Ingreso", "Egreso"]:
-        return jsonify({"error": "Tipo de movimiento no válido"}), 400
+        return jsonify({"error": "Tipo de movimiento no vÃ¡lido"}), 400
 
     if not concepto:
         return jsonify({"error": "El concepto es obligatorio"}), 400
@@ -2127,7 +2127,7 @@ def registrar_movimiento_caja():
             return jsonify({"error": "El valor debe ser mayor que cero"}), 400
 
     except (TypeError, ValueError):
-        return jsonify({"error": "El valor ingresado no es válido"}), 400
+        return jsonify({"error": "El valor ingresado no es vÃ¡lido"}), 400
 
     conexion = conectar_bd()
 
@@ -2175,7 +2175,7 @@ def iniciar_sesion():
 
     if not usuario or not contrasena:
         return jsonify({
-            "mensaje": "Debes ingresar usuario y contraseña."
+            "mensaje": "Debes ingresar usuario y contraseÃ±a."
         }), 400
 
     conexion = conectar_bd()
@@ -2200,7 +2200,7 @@ def iniciar_sesion():
 
         if resultado is None:
             return jsonify({
-                "mensaje": "Usuario o contraseña incorrectos."
+                "mensaje": "Usuario o contraseÃ±a incorrectos."
             }), 401
 
         id_usuario, nombre, usuario_db, clave_hash, rol, estado = resultado
@@ -2212,10 +2212,10 @@ def iniciar_sesion():
 
         if not check_password_hash(clave_hash, contrasena):
             return jsonify({
-                "mensaje": "Usuario o contraseña incorrectos."
+                "mensaje": "Usuario o contraseÃ±a incorrectos."
             }), 401
 
-                # Generar token de autenticación
+                # Generar token de autenticaciÃ³n
         token = serializador.dumps({
             "id": id_usuario,
             "usuario": usuario_db,
@@ -2231,7 +2231,7 @@ def iniciar_sesion():
 })
         
         return jsonify({
-            "mensaje": "Inicio de sesión correcto.",
+            "mensaje": "Inicio de sesiÃ³n correcto.",
             "token": token,
             "usuario": {
                 "id": id_usuario,
@@ -2242,10 +2242,10 @@ def iniciar_sesion():
         }), 200
 
     except Error as error:
-        print("Error en el inicio de sesión:", error)
+        print("Error en el inicio de sesiÃ³n:", error)
 
         return jsonify({
-            "mensaje": "Ocurrió un error al iniciar sesión."
+            "mensaje": "OcurriÃ³ un error al iniciar sesiÃ³n."
         }), 500
 
     finally:
@@ -2263,5 +2263,6 @@ if __name__ == "__main__":
         port=int(os.environ.get("PORT", 5001)),
         debug=False
     )
+
 
 
