@@ -97,11 +97,13 @@ def requiere_rol(rol_requerido):
 def conectar_bd():
     try:
         conexion = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="agrogestion"
+            host=os.environ.get("MYSQLHOST", "localhost"),
+            port=int(os.environ.get("MYSQLPORT", 3306)),
+            user=os.environ.get("MYSQLUSER", "root"),
+            password=os.environ.get("MYSQLPASSWORD", ""),
+            database=os.environ.get("MYSQLDATABASE", "agrogestion")
         )
+
         return conexion
 
     except Error as error:
@@ -2257,13 +2259,9 @@ def iniciar_sesion():
 
 if __name__ == "__main__":
     app.run(
-        host="127.0.0.1",
-        port=5001,
-        debug=True
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5001)),
+        debug=False
     )
 
 
-app.config["SECRET_KEY"] = os.environ.get(
-    "SECRET_KEY",
-    "4efed7af1f037b0d8a655d2e5230545507bb5f24dbc8cb1b2009a60837b7352c"
-)
