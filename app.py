@@ -25,73 +25,9 @@ serializador = URLSafeTimedSerializer(
 )
 
 
-# ==========================================
-# VERIFICAR TOKEN DEL USUARIO
-# ==========================================
-
-def requiere_autenticacion(funcion):
-
-    @wraps(funcion)
-    def decorada(*args, **kwargs):
-
-        autorizacion = request.headers.get("Authorization", "")
-
-        if not autorizacion.startswith("Bearer "):
-            return jsonify({
-                "error": "Debes iniciar sesiÃ³n."
-            }), 401
-
-        token = autorizacion.split(" ", 1)[1]
-
-        try:
-            usuario = serializador.loads(
-                token,
-                max_age=28800
-            )
-
-            request.usuario = usuario
-
-        except SignatureExpired:
-            return jsonify({
-                "error": "La sesiÃ³n ha expirado. Inicia sesiÃ³n nuevamente."
-            }), 401
-
-        except BadSignature:
-            return jsonify({
-                "error": "Token de sesiÃ³n no vÃ¡lido."
-            }), 401
-
-        return funcion(*args, **kwargs)
-
-    return decorada
-
 
 # ==========================================
-# VERIFICAR PERMISOS DE JEFE
-# ==========================================
-
-def requiere_rol(rol_requerido):
-
-    def decorador(funcion):
-
-        @wraps(funcion)
-        @requiere_autenticacion
-        def decorada(*args, **kwargs):
-
-            if request.usuario.get("rol") != rol_requerido:
-                return jsonify({
-                    "error": "No tienes permisos para realizar esta operaciÃ³n."
-                }), 403
-
-            return funcion(*args, **kwargs)
-
-        return decorada
-
-    return decorador
-
-
-# ==========================================
-# CONEXIÃ“N CON MYSQL
+# CONEXIÓN CON MYSQL
 # ==========================================
 
 def conectar_bd():
@@ -146,11 +82,7 @@ def requiere_token(funcion):
         token = autorizacion.split(" ", 1)[1]
 
         try:
-            datos_token = URLSafeTimedSerializer(
-                app.config["SECRET_KEY"]
-            ).loads(token, max_age=28800)
-
-            request.usuario = datos_token
+            datos_token = serializador.loads(token, max_age=28800)
 
         except Exception:
             return jsonify({
@@ -2215,20 +2147,12 @@ def iniciar_sesion():
                 "mensaje": "Usuario o contraseÃ±a incorrectos."
             }), 401
 
-                # Generar token de autenticaciÃ³n
+                # Generar token de autenticación
         token = serializador.dumps({
             "id": id_usuario,
             "usuario": usuario_db,
             "rol": rol
         })
-
-        token = URLSafeTimedSerializer(
-    app.config["SECRET_KEY"]
-).dumps({
-    "id": id_usuario,
-    "usuario": usuario_db,
-    "rol": rol
-})
         
         return jsonify({
             "mensaje": "Inicio de sesiÃ³n correcto.",

@@ -5,6 +5,16 @@
 const API_PRODUCTOS = "http://127.0.0.1:5001/api/productos";
 const API_LOTES = "http://127.0.0.1:5001/api/lotes";
 
+
+
+// ==========================================
+// PERMISOS DEL USUARIO
+// ==========================================
+
+const usuarioLotes = JSON.parse(localStorage.getItem("usuarioActual"));
+const esEmpleado = usuarioLotes && usuarioLotes.rol === "empleado";
+
+
 // ==========================================
 // ELEMENTOS HTML
 // ==========================================
@@ -268,6 +278,10 @@ function mostrarLotes() {
             </td>
 
             <td>
+    ${
+        esEmpleado
+            ? '<span class="text-muted">Solo consulta</span>'
+            : `
                 <button
                     class="btn btn-accion btn-eliminar"
                     onclick="eliminarLote(${Number(lote.id)})"
@@ -275,7 +289,9 @@ function mostrarLotes() {
                 >
                     <i class="fa-solid fa-trash"></i>
                 </button>
-            </td>
+            `
+    }
+</td>
         `;
 
     tablaLotes.appendChild(fila);
@@ -390,6 +406,11 @@ formulario.addEventListener("submit", async function (event) {
 // ==========================================
 
 async function eliminarLote(id) {
+
+    if (esEmpleado) {
+        alert("No tienes permisos para eliminar lotes.");
+        return;
+    }
   const confirmar = confirm("¿Está seguro de eliminar este lote?");
 
   if (!confirmar) {

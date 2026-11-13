@@ -1,5 +1,12 @@
 const API_URL = "http://127.0.0.1:5001/api/clientes";
 
+
+// ==========================================
+// VERIFICAR USUARIO ACTUAL
+// ==========================================
+
+const usuarioClientes = JSON.parse(localStorage.getItem("usuarioActual"));
+
 // Elementos del formulario
 const formulario = document.getElementById("formCliente");
 const tabla = document.getElementById("tablaClientes");

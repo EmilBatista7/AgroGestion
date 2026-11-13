@@ -1,8 +1,17 @@
+
 // ==========================================
-// CONFIGURACIÓN DE LA API
+// CONFIGURACION DE LA API
 // ==========================================
 
 const API = "http://127.0.0.1:5001/api";
+
+// ==========================================
+// OBTENER USUARIO ACTUAL
+// ==========================================
+
+const usuario = JSON.parse(localStorage.getItem("usuarioActual"));
+
+const esEmpleado = usuario && usuario.rol === "empleado";
 
 let movimientosCaja = [];
 
@@ -22,19 +31,27 @@ const totalEgresos = document.getElementById("totalEgresos");
 const saldoActual = document.getElementById("saldoActual");
 
 // ==========================================
+// RESTRINGIR FORMULARIO PARA EMPLEADOS
+// ==========================================
+
+if (esEmpleado && formulario) {
+    formulario.closest(".agro-panel").style.display = "none";
+}
+
+// ==========================================
 // CONSULTAR API
 // ==========================================
 
 async function consultarAPI(ruta, opciones = {}) {
-  const respuesta = await fetch(API + ruta, opciones);
+    const respuesta = await fetch(API + ruta, opciones);
 
-  const datos = await respuesta.json();
+    const datos = await respuesta.json();
 
-  if (!respuesta.ok) {
-    throw new Error(datos.error || "Ocurrió un error en la solicitud.");
-  }
+    if (!respuesta.ok) {
+        throw new Error(datos.error || "Ocurrió un error en la solicitud.");
+    }
 
-  return datos;
+    return datos;
 }
 
 // ==========================================
@@ -42,17 +59,18 @@ async function consultarAPI(ruta, opciones = {}) {
 // ==========================================
 
 async function cargarMovimientos() {
-  try {
-    movimientosCaja = await consultarAPI("/movimientos-caja");
+    try {
+        movimientosCaja = await consultarAPI("/movimientos-caja");
 
-    mostrarMovimientos();
+        mostrarMovimientos();
 
-    actualizarResumen();
-  } catch (error) {
-    console.error("Error al cargar caja:", error);
+        actualizarResumen();
 
-    alert("No fue posible cargar los movimientos de caja: " + error.message);
-  }
+    } catch (error) {
+        console.error("Error al cargar caja:", error);
+
+        alert("No fue posible cargar los movimientos de caja: " + error.message);
+    }
 }
 
 // ==========================================
@@ -60,31 +78,31 @@ async function cargarMovimientos() {
 // ==========================================
 
 function mostrarMovimientos() {
-  tablaCaja.innerHTML = "";
+    tablaCaja.innerHTML = "";
 
-  movimientosCaja.forEach(function (movimiento) {
-    const fila = document.createElement("tr");
+    movimientosCaja.forEach(function (movimiento) {
+        const fila = document.createElement("tr");
 
-    const fecha = document.createElement("td");
-    fecha.textContent = movimiento.fecha;
+        const fecha = document.createElement("td");
+        fecha.textContent = movimiento.fecha;
 
-    const tipo = document.createElement("td");
-    tipo.textContent = movimiento.tipo;
+        const tipo = document.createElement("td");
+        tipo.textContent = movimiento.tipo;
 
-    const descripcion = document.createElement("td");
-    descripcion.textContent = movimiento.concepto;
+        const descripcion = document.createElement("td");
+        descripcion.textContent = movimiento.concepto;
 
-    const monto = document.createElement("td");
-    monto.className = "text-end";
-    monto.textContent = "$" + Number(movimiento.valor).toLocaleString("es-CO");
+        const monto = document.createElement("td");
+        monto.className = "text-end";
+        monto.textContent = "$" + Number(movimiento.valor).toLocaleString("es-CO");
 
-    fila.appendChild(fecha);
-    fila.appendChild(tipo);
-    fila.appendChild(descripcion);
-    fila.appendChild(monto);
+        fila.appendChild(fecha);
+        fila.appendChild(tipo);
+        fila.appendChild(descripcion);
+        fila.appendChild(monto);
 
-    tablaCaja.appendChild(fila);
-  });
+        tablaCaja.appendChild(fila);
+    });
 }
 
 // ==========================================
@@ -92,87 +110,90 @@ function mostrarMovimientos() {
 // ==========================================
 
 function actualizarResumen() {
-  let ingresos = 0;
-  let egresos = 0;
+    let ingresos = 0;
+    let egresos = 0;
 
-  movimientosCaja.forEach(function (movimiento) {
-    const monto = Number(movimiento.valor);
+    movimientosCaja.forEach(function (movimiento) {
+        const monto = Number(movimiento.valor);
 
-    if (movimiento.tipo === "Ingreso") {
-      ingresos += monto;
-    }
+        if (movimiento.tipo === "Ingreso") {
+            ingresos += monto;
+        }
 
-    if (movimiento.tipo === "Egreso") {
-      egresos += monto;
-    }
-  });
+        if (movimiento.tipo === "Egreso") {
+            egresos += monto;
+        }
+    });
 
-  const saldo = ingresos - egresos;
+    const saldo = ingresos - egresos;
 
-  totalIngresos.textContent = ingresos.toLocaleString("es-CO");
+    totalIngresos.textContent = ingresos.toLocaleString("es-CO");
 
-  totalEgresos.textContent = egresos.toLocaleString("es-CO");
+    totalEgresos.textContent = egresos.toLocaleString("es-CO");
 
-  saldoActual.textContent = saldo.toLocaleString("es-CO");
+    saldoActual.textContent = saldo.toLocaleString("es-CO");
 }
 
 // ==========================================
 // REGISTRAR MOVIMIENTO MANUAL
 // ==========================================
 
-formulario.addEventListener("submit", async function (evento) {
-  evento.preventDefault();
+if (!esEmpleado) {
+    formulario.addEventListener("submit", async function (evento) {
+        evento.preventDefault();
 
-  const tipo = tipoMovimiento.value;
+        const tipo = tipoMovimiento.value;
 
-  const descripcion = concepto.value.trim();
+        const descripcion = concepto.value.trim();
 
-  const monto = Number(valor.value);
+        const monto = Number(valor.value);
 
-  // Validar información
+        // Validar informacion
 
-  if (
-    tipo === "" ||
-    descripcion === "" ||
-    !Number.isFinite(monto) ||
-    monto <= 0
-  ) {
-    alert("Por favor complete todos los campos correctamente.");
+        if (
+            tipo === "" ||
+            descripcion === "" ||
+            !Number.isFinite(monto) ||
+            monto <= 0
+        ) {
+            alert("Por favor complete todos los campos correctamente.");
 
-    return;
-  }
+            return;
+        }
 
-  try {
-    const datos = {
-      tipo: tipo,
-      concepto: descripcion,
-      valor: monto,
-    };
+        try {
+            const datos = {
+                tipo: tipo,
+                concepto: descripcion,
+                valor: monto
+            };
 
-    await consultarAPI("/movimientos-caja", {
-      method: "POST",
+            await consultarAPI("/movimientos-caja", {
+                method: "POST",
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-      body: JSON.stringify(datos),
+                body: JSON.stringify(datos)
+            });
+
+            formulario.reset();
+
+            await cargarMovimientos();
+
+            alert("Movimiento registrado correctamente.");
+
+        } catch (error) {
+            console.error("Error al registrar movimiento:", error);
+
+            alert("No fue posible registrar el movimiento: " + error.message);
+        }
     });
-
-    formulario.reset();
-
-    await cargarMovimientos();
-
-    alert("Movimiento registrado correctamente.");
-  } catch (error) {
-    console.error("Error al registrar movimiento:", error);
-
-    alert("No fue posible registrar el movimiento: " + error.message);
-  }
-});
+}
 
 // ==========================================
-// INICIAR MÓDULO CAJA
+// INICIAR MODULO CAJA
 // ==========================================
 
 cargarMovimientos();

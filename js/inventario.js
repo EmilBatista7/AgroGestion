@@ -149,26 +149,172 @@ function mostrarInventario() {
 }
 
 // ==========================================
-// MOSTRAR HISTORIAL DE MOVIMIENTOS
+// OBTENER FECHA DEL MOVIMIENTO
+// ==========================================
+
+function obtenerFechaMovimiento(fechaTexto) {
+
+    const fecha = String(fechaTexto || "");
+
+    // Formato recibido: DD/MM/AAAA HH:mm
+    const partes = fecha.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/
+    );
+
+    if (partes) {
+        return new Date(
+            Number(partes[3]),
+            Number(partes[2]) - 1,
+            Number(partes[1]),
+            Number(partes[4] || 0),
+            Number(partes[5] || 0)
+        );
+    }
+
+    // Intentar interpretar otros formatos de fecha
+    const fechaConvertida = new Date(fecha);
+
+    if (isNaN(fechaConvertida.getTime())) {
+        return null;
+    }
+
+    return fechaConvertida;
+}
+
+
+// ==========================================
+// MOSTRAR HISTORIAL AGRUPADO POR MES
 // ==========================================
 
 function mostrarMovimientos() {
-  tablaMovimientos.innerHTML = "";
 
-  movimientos.forEach((movimiento) => {
-    const fila = document.createElement("tr");
+    tablaMovimientos.innerHTML = "";
 
-    fila.innerHTML = `
-            <td>${movimiento.fecha || ""}</td>
-            <td>${movimiento.producto || movimiento.productoCodigo}</td>
-            <td>${movimiento.lote || "Sin lote"}</td>
-            <td>${movimiento.tipo}</td>
-            <td>${movimiento.cantidad}</td>
+    if (movimientos.length === 0) {
+
+        tablaMovimientos.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center">
+                    No hay movimientos registrados.
+                </td>
+            </tr>
         `;
 
-    tablaMovimientos.appendChild(fila);
-  });
+        return;
+    }
+
+    // Agrupar movimientos por mes y año
+    const grupos = new Map();
+
+    movimientos.forEach((movimiento) => {
+
+        const fecha = obtenerFechaMovimiento(movimiento.fecha);
+
+        let clave;
+        let nombreMes;
+
+        if (fecha) {
+
+            const anio = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+
+            clave = `${anio}-${mes}`;
+
+            nombreMes = new Intl.DateTimeFormat("es-CO", {
+                month: "long",
+                year: "numeric"
+            }).format(fecha);
+
+            nombreMes =
+                nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+
+        } else {
+
+            clave = "sin-fecha";
+            nombreMes = "Fecha no disponible";
+
+        }
+
+        if (!grupos.has(clave)) {
+            grupos.set(clave, {
+                nombre: nombreMes,
+                movimientos: []
+            });
+        }
+
+        grupos.get(clave).movimientos.push(movimiento);
+
+    });
+
+    // Mostrar cada grupo mensual
+    grupos.forEach((grupo) => {
+
+        // Encabezado del mes
+        const filaMes = document.createElement("tr");
+
+        filaMes.innerHTML = `
+            <td colspan="5" class="table-secondary fw-bold">
+                <i class="fa-solid fa-calendar-days me-2"></i>
+                ${grupo.nombre}
+            </td>
+        `;
+
+        tablaMovimientos.appendChild(filaMes);
+
+        // Movimientos correspondientes al mes
+        grupo.movimientos.forEach((movimiento) => {
+
+            const fila = document.createElement("tr");
+
+            fila.innerHTML = `
+                <td>${movimiento.fecha || ""}</td>
+                <td>${movimiento.producto || movimiento.productoCodigo}</td>
+                <td>${movimiento.lote || "Sin lote"}</td>
+                <td>${movimiento.tipo}</td>
+                <td>${movimiento.cantidad}</td>
+            `;
+
+            tablaMovimientos.appendChild(fila);
+
+        });
+
+    });
+
 }
+
+
+// ==========================================
+// ABRIR Y CERRAR HISTORIAL
+// ==========================================
+
+const botonHistorial = document.getElementById("botonHistorial");
+const contenedorHistorial = document.getElementById("contenedorHistorial");
+
+botonHistorial.addEventListener("click", function () {
+
+    const estaOculto = contenedorHistorial.style.display === "none";
+
+    if (estaOculto) {
+
+        contenedorHistorial.style.display = "block";
+
+        botonHistorial.innerHTML = `
+            <i class="fa-solid fa-eye-slash me-2"></i>
+            Ocultar historial de movimientos
+        `;
+
+    } else {
+
+        contenedorHistorial.style.display = "none";
+
+        botonHistorial.innerHTML = `
+            <i class="fa-solid fa-clock-rotate-left me-2"></i>
+            Ver historial de movimientos
+        `;
+
+    }
+
+});
 
 // ==========================================
 // ACTUALIZAR LOTES AL CAMBIAR PRODUCTO
